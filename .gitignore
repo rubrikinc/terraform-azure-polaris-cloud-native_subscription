@@ -1,0 +1,7 @@
+.terraform*
+*.tfstate*
+*.tfvars
+.*.hcl
+*.out
+.vscode
+!.terraform-docs.yml
