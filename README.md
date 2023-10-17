@@ -15,7 +15,7 @@ There are a few services you'll need in order to get this project off the ground
 
 ```hcl
 module "polaris-azure-cloud-native_subscription" {
-  source  = "rubrikinc/terraform-polaris-cloud-native_subscription/azure"
+  source  = "rubrikinc/polaris-cloud-native_subscription/azure"
   
   polaris_credentials             = "../.creds/customer-service-account.json"
   path_to_tenant_state_file       = "../terraform-azure-polaris-cloud-native_tenant/terraform.tfstate"
@@ -92,6 +92,8 @@ No outputs.
 ## Configure the Backend
 
 This module is designed to use a shared backend with the [Terraform Module - Azure Rubrik Cloud Native Tenant](https://github.com/rubrikinc/terraform-azure-polaris-cloud-native_tenant) module. By default it uses a `terraform.tfstate` file that is provided by running the [Terraform Module - Azure Rubrik Cloud Native Tenant](https://github.com/rubrikinc/terraform-azure-polaris-cloud-native_tenant) module first. The `path_to_tenant_state_file` variable should be set to point to the `terraform.tfstate` file which was created by the [Terraform Module - Azure Rubrik Cloud Native Tenant](https://github.com/rubrikinc/terraform-azure-polaris-cloud-native_tenant) module.
+
+The reason to use a remote state between these two modules is to allow a workflow where each subscription maintains its own state file in Terraform. This module can then be added to an existing Terraform script that configures the subscription. The architecture for RSC dictates that a single service principal in a tenant service multiple subscriptions. There for the [Terraform Module - Azure Rubrik Cloud Native Tenant](https://github.com/rubrikinc/terraform-azure-polaris-cloud-native_tenant) only needs to be run once to create the service principal that each subscription under the tenant will use. 
 
 A better best practice is to configure this module and the [Terraform Module - Azure Rubrik Cloud Native Tenant](https://github.com/rubrikinc/terraform-azure-polaris-cloud-native_tenant) module to use a remote backend. To do so in this module the `data "terraform_remote_state" "polaris"` resource in the [main.tf](main.tf) file will need to be reconfigured for the preferred remote backend. This will need to match the remote backend that is used in the [Terraform Module - Azure Rubrik Cloud Native Tenant](https://github.com/rubrikinc/terraform-azure-polaris-cloud-native_tenant) module. See [Backend Configuration}(https://developer.hashicorp.com/terraform/language/settings/backends/configuration) for more information about configuring remote backends.
 
@@ -180,7 +182,7 @@ If you remove the last subscription from RSC for a tenant, the tenant will also 
 
 ### Missing Tenant
 
-You may recieve the following error when applying the Terraform plan:
+You may receive the following error when applying the Terraform plan:
 
 ```none
 ╷
