@@ -14,16 +14,23 @@ There are a few services you'll need in order to get this project off the ground
 ## Usage
 
 ```hcl
-module "polaris-azure-cloud-native_subscription" {
-  source  = "rubrikinc/polaris-cloud-native_subscription/azure"
+# Add a single subscription
+
+module "polaris-azure-cloud-native_tenant" {
+  source                          = "rubrikinc/polaris-cloud-native_tenant/azure"
   
+  azure_tenant_id                 = "abcdef01-2345-6789-abcd-ef0123456789"
   polaris_credentials             = "../.creds/customer-service-account.json"
-  path_to_tenant_state_file       = "../terraform-azure-polaris-cloud-native_tenant/terraform.tfstate"
-  azure_subscription_id           = "01234567-99ab-cdef-0123-456789abcdef"
-  regions_to_protect              = ["westus","westus2","eastus"]
-  enable_cloud_native_protection  = true
-  enable_exocompute               = true
-  exocompute_details              = {
+}
+
+module "polaris-azure-cloud-native_subscription" {
+  source                              = "rubrikinc/polaris-cloud-native_subscription/azure"
+  
+  azure_service_principal_object_id   = module.polaris-azure-cloud-native_tenant.azure_service_principal_object_id
+  azure_subscription_id               = "01234567-99ab-cdef-0123-456789abcdef"
+  enable_cloud_native_protection      = true
+  enable_exocompute                   = true
+  exocompute_details                  = {
     exocompute_config_1 = {
       region                    = "westus2"
       subnet_name               = "subnet1"
@@ -31,7 +38,68 @@ module "polaris-azure-cloud-native_subscription" {
       vnet_resource_group_name  = "vnet-rg"
     }
   }
+  polaris_credentials                 = "../.creds/customer-service-account.json"
+  regions_to_protect                  = ["westus","westus2","eastus"]
+  rsc_service_principal_tenant_domain = module.polaris-azure-cloud-native_tenant.rsc_service_principal_tenant_domain
 }
+```
+
+```hcl
+# Add a multiple subscriptions in the same tenant with multiple regions for Exocompute
+
+module "polaris-azure-cloud-native_tenant" {
+  source                          = "rubrikinc/polaris-cloud-native_tenant/azure"
+  
+  azure_tenant_id                 = "abcdef01-2345-6789-abcd-ef0123456789"
+  polaris_credentials             = "../.creds/customer-service-account.json"
+}
+
+module "polaris-azure-cloud-native_subscription_1" {
+  source  = "rubrikinc/polaris-cloud-native_subscription/azure"
+  
+  azure_service_principal_object_id   = module.polaris-azure-cloud-native_tenant.azure_service_principal_object_id
+  azure_subscription_id               = "01234567-99ab-cdef-0123-456789abcdef"
+  enable_cloud_native_protection      = true
+  enable_exocompute                   = true
+  exocompute_details                  = {
+    exocompute_config_1 = {
+      region                    = "westus2"
+      subnet_name               = "subnet1"
+      vnet_name                 = "vnet1"
+      vnet_resource_group_name  = "vnet-rg"
+    }
+  }
+  polaris_credentials                 = "../.creds/customer-service-account.json"
+  regions_to_protect                  = ["westus","westus2","eastus"]
+  rsc_service_principal_tenant_domain = module.polaris-azure-cloud-native_tenant.rsc_service_principal_tenant_domain
+}
+
+module "polaris-azure-cloud-native_subscription_2" {
+  source                              = "rubrikinc/polaris-cloud-native_subscription/azure"
+  
+  azure_service_principal_object_id   = module.polaris-azure-cloud-native_tenant.azure_service_principal_object_id
+  azure_subscription_id               = "01234567-99ab-cdef-fedc-ba987654"
+  enable_cloud_native_protection      = true
+  enable_exocompute                   = true
+  exocompute_details                  = {
+    exocompute_config_1 = {
+      region                    = "eastus"
+      subnet_name               = "subnet2"
+      vnet_name                 = "vnet2"
+      vnet_resource_group_name  = "vnet2-rg"
+    }
+    exocompute_config_2 = {
+      region                    = "westus"
+      subnet_name               = "subnet3"
+      vnet_name                 = "vnet3"
+      vnet_resource_group_name  = "vnet3-rg"
+    }
+  }
+  polaris_credentials                 = "../.creds/customer-service-account.json"
+  regions_to_protect                  = ["westus","westus2","eastus"]
+  rsc_service_principal_tenant_domain = module.polaris-azure-cloud-native_tenant.rsc_service_principal_tenant_domain
+}
+
 ```
 
 <!-- BEGIN_TF_DOCS -->
