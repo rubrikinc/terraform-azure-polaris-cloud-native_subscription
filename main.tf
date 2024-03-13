@@ -37,7 +37,7 @@ resource "azurerm_role_definition" "cloud_native_protection" {
 # principal_id is the object id of the service principal.
 resource "azurerm_role_assignment" "cloud_native_protection" {
   count              = var.enable_cloud_native_protection == true ? 1 : 0
-  principal_id       = data.terraform_remote_state.polaris.outputs.service_principal_object_id
+  principal_id       = var.azure_service_principal_object_id
   role_definition_id = azurerm_role_definition.cloud_native_protection.0.role_definition_resource_id
   scope              = data.azurerm_subscription.current.id
 }
@@ -69,7 +69,7 @@ resource "azurerm_role_definition" "exocompute" {
 # principal_id is the object id of the service principal.
 resource "azurerm_role_assignment" "exocompute" {
   count              = var.enable_exocompute == true ? 1 : 0
-  principal_id       = data.terraform_remote_state.polaris.outputs.service_principal_object_id
+  principal_id       = var.azure_service_principal_object_id
   role_definition_id = azurerm_role_definition.exocompute.0.role_definition_resource_id
   scope              = data.azurerm_subscription.current.id
 }
@@ -78,7 +78,7 @@ resource "azurerm_role_assignment" "exocompute" {
 resource "polaris_azure_subscription" "polaris" {
   subscription_id   = element(split("/", data.azurerm_subscription.current.id), 2)
   subscription_name = data.azurerm_subscription.current.display_name
-  tenant_domain     = data.terraform_remote_state.polaris.outputs.service_principal_tenant_domain
+  tenant_domain     = var.rsc_service_principal_tenant_domain
 
   cloud_native_protection {
     regions = var.regions_to_protect

@@ -3,6 +3,11 @@ variable "azure_subscription_id" {
   description = "Azure subscription id."
 }
 
+variable "azure_service_principal_object_id" {
+  type        = string
+  description = "Azure service principal object id."
+}
+
 variable "regions_to_protect" {
   type        = list
   description = "List of regions to protect."
@@ -40,7 +45,7 @@ variable "polaris_credentials" {
   description = "Full path to credentials file for RSC/Polaris."
 }
 
-variable "path_to_tenant_state_file" {
+variable "rsc_service_principal_tenant_domain" {
   type        = string
-  description = "Path to the tenant state file that was created by the terraform-azure-polaris-cloud-native_tenant module"
+  description = "Tenant domain of the Service Principal created in RSC."
 }
