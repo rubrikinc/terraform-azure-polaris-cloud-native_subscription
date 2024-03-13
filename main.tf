@@ -2,14 +2,8 @@ locals {
   exocompute_regions = flatten([
     for exocompute_detail, details in var.exocompute_details: details.region
   ])
-}
 
-data "terraform_remote_state" "polaris" {
-  backend = "local"
-
-  config = {
-    path = var.path_to_tenant_state_file
-  }
+  rsc_instance_fqdn = (element(split("/",jsondecode(file("${var.polaris_credentials}")).access_token_uri),2))
 }
 
 # The subscription the Azure RM is running with.
@@ -27,7 +21,7 @@ data "polaris_azure_permissions" "cloud_native_protection" {
 # Create a role in Azure called terraform which has the required permissions.
 resource "azurerm_role_definition" "cloud_native_protection" {
   count       = var.enable_cloud_native_protection == true ? 1 : 0
-  name        = "Rubrik Polaris CLOUD_NATIVE_PROTECTION - ${data.terraform_remote_state.polaris.outputs.service_principal_object_id}"
+  name        = "Rubrik Polaris CLOUD_NATIVE_PROTECTION - ${local.rsc_instance_fqdn}"
   description = "Rubrik Polaris role for CLOUD_NATIVE_PROTECTION - Terraform Generated"
   scope       = data.azurerm_subscription.current.id
 
@@ -59,7 +53,7 @@ data "polaris_azure_permissions" "exocompute" {
 # Create a role in Azure called terraform which has the required permissions.
 resource "azurerm_role_definition" "exocompute" {
   count       = var.enable_exocompute == true ? 1 : 0
-  name        = "Rubrik Polaris EXOCOMPUTE - ${data.terraform_remote_state.polaris.outputs.service_principal_object_id}"
+  name        = "Rubrik Polaris EXOCOMPUTE - ${local.rsc_instance_fqdn}"
   description = "Rubrik Polaris role for EXOCOMPUTE - Terraform Generated"
   scope       = data.azurerm_subscription.current.id
 
