@@ -1,9 +1,9 @@
 locals {
   exocompute_regions = flatten([
-    for exocompute_detail, details in var.exocompute_details: details.region
+    for exocompute_detail, details in var.exocompute_details : details.region
   ])
 
-  rsc_instance_fqdn = (element(split("/",jsondecode(file("${var.polaris_credentials}")).access_token_uri),2))
+  rsc_instance_fqdn = (element(split("/", jsondecode(file("${var.polaris_credentials}")).access_token_uri), 2))
 }
 
 # The subscription the Azure RM is running with.
@@ -18,7 +18,8 @@ data "polaris_azure_permissions" "cloud_native_protection" {
   ]
 }
 
-# Create a role in Azure called terraform which has the required permissions.
+# Create a role in Azure for Cloud Native Protection with the required
+# permissions.
 resource "azurerm_role_definition" "cloud_native_protection" {
   count       = var.enable_cloud_native_protection == true ? 1 : 0
   name        = "Rubrik Polaris CLOUD_NATIVE_PROTECTION - ${local.rsc_instance_fqdn}"
@@ -50,7 +51,7 @@ data "polaris_azure_permissions" "exocompute" {
   ]
 }
 
-# Create a role in Azure called terraform which has the required permissions.
+# Create a role in Azure for Exocompute with the required permissions.
 resource "azurerm_role_definition" "exocompute" {
   count       = var.enable_exocompute == true ? 1 : 0
   name        = "Rubrik Polaris EXOCOMPUTE - ${local.rsc_instance_fqdn}"
@@ -74,8 +75,29 @@ resource "azurerm_role_assignment" "exocompute" {
   scope              = data.azurerm_subscription.current.id
 }
 
-# Add the Azure subscription to RSC.
-resource "polaris_azure_subscription" "polaris" {
+# Add the Azure subscription to RSC enabling only the Cloud Native Protection
+# feature. If the enable_exocompute variable is set to true, count will evaluate
+# to 0.
+resource "polaris_azure_subscription" "cloud_native_protection" {
+  count             = var.enable_cloud_native_protection == true ? var.enable_exocompute == false ? 1 : 0 : 0
+  subscription_id   = element(split("/", data.azurerm_subscription.current.id), 2)
+  subscription_name = data.azurerm_subscription.current.display_name
+  tenant_domain     = var.rsc_service_principal_tenant_domain
+
+  cloud_native_protection {
+    regions = var.regions_to_protect
+  }
+
+  delete_snapshots_on_destroy = var.delete_snapshots_on_destroy == true ? true : false
+}
+
+# Add the Azure subscription to RSC enabling both Cloud Native Protection and
+# Exocompute. If either enable_cloud_native_protection or enable_exocompute is
+# false, count will evaluate to 0.
+# Note, the provider currently requires Cloud Native Protection when Exocompute
+# is enabled.
+resource "polaris_azure_subscription" "cloud_native_protection_and_exocompute" {
+  count             = var.enable_cloud_native_protection == true ? var.enable_exocompute == true ? 1 : 0 : 0
   subscription_id   = element(split("/", data.azurerm_subscription.current.id), 2)
   subscription_name = data.azurerm_subscription.current.display_name
   tenant_domain     = var.rsc_service_principal_tenant_domain
@@ -89,7 +111,7 @@ resource "polaris_azure_subscription" "polaris" {
   }
 
   delete_snapshots_on_destroy = var.delete_snapshots_on_destroy == true ? true : false
-} 
+}
 
 data "azurerm_subnet" "polaris" {
   for_each             = { for k, v in var.exocompute_details : k => v if var.enable_exocompute }
@@ -98,10 +120,10 @@ data "azurerm_subnet" "polaris" {
   resource_group_name  = each.value["vnet_resource_group_name"]
 }
 
-# Configure the subscription to host Exocompute
+# Configure the subscription to host Exocompute.
 resource "polaris_azure_exocompute" "polaris" {
   for_each        = { for k, v in var.exocompute_details : k => v if var.enable_exocompute }
-  subscription_id = polaris_azure_subscription.polaris.id
+  subscription_id = polaris_azure_subscription.cloud_native_protection_and_exocompute.0.id
   region          = each.value["region"]
   subnet          = data.azurerm_subnet.polaris[each.key].id
 }

@@ -1,11 +1,11 @@
 terraform {
   required_providers {
     azurerm = {
-      source  = "hashicorp/azurerm"
+      source = "hashicorp/azurerm"
     }
     polaris = {
-      source  = "rubrikinc/polaris"
-    } 
+      source = "rubrikinc/polaris"
+    }
   }
 }
 
