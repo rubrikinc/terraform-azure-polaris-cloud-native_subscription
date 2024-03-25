@@ -113,8 +113,8 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 3.76.0 |
-| <a name="provider_polaris"></a> [polaris](#provider\_polaris) | 0.7.2 |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 3.97.1 |
+| <a name="provider_polaris"></a> [polaris](#provider\_polaris) | 0.7.7 |
 
 ## Resources
 
@@ -125,6 +125,7 @@ No requirements.
 | [azurerm_role_definition.cloud_native_protection](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_definition) | resource |
 | [azurerm_role_definition.exocompute](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_definition) | resource |
 | [polaris_azure_exocompute.polaris](https://registry.terraform.io/providers/rubrikinc/polaris/latest/docs/resources/azure_exocompute) | resource |
+| [polaris_azure_subscription.cloud_native_protection](https://registry.terraform.io/providers/rubrikinc/polaris/latest/docs/resources/azure_subscription) | resource |
 | [polaris_azure_subscription.polaris](https://registry.terraform.io/providers/rubrikinc/polaris/latest/docs/resources/azure_subscription) | resource |
 | [azurerm_subnet.polaris](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/subnet) | data source |
 | [azurerm_subscription.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/subscription) | data source |
@@ -144,15 +145,14 @@ No modules.
 | <a name="input_delete_snapshots_on_destroy"></a> [delete\_snapshots\_on\_destroy](#input\_delete\_snapshots\_on\_destroy) | Should snapshots be deleted when the resource is destroyed. | `bool` | `false` | no |
 | <a name="input_enable_cloud_native_protection"></a> [enable\_cloud\_native\_protection](#input\_enable\_cloud\_native\_protection) | Enable cloud native protection for Azure VMs. | `bool` | n/a | yes |
 | <a name="input_enable_exocompute"></a> [enable\_exocompute](#input\_enable\_exocompute) | Enable Exocompute for the subscription. | `bool` | n/a | yes |
-| <a name="input_exocompute_details"></a> [exocompute\_details](#input\_exocompute\_details) | Region and subnet pair to run Exocompute in. | <pre>map(object({<br>    region                    = string<br>#    subnet_id = string<br>    subnet_name               = string<br>    vnet_name                 = string<br>    vnet_resource_group_name  = string<br>  }))</pre> | n/a | yes |
+| <a name="input_exocompute_details"></a> [exocompute\_details](#input\_exocompute\_details) | Region and subnet pair to run Exocompute in. | <pre>map(object({<br>    region                   = string<br>    subnet_name              = string<br>    vnet_name                = string<br>    vnet_resource_group_name = string<br>  }))</pre> | `{}` | no |
 | <a name="input_polaris_credentials"></a> [polaris\_credentials](#input\_polaris\_credentials) | Full path to credentials file for RSC/Polaris. | `string` | n/a | yes |
-| <a name="input_regions_to_protect"></a> [regions\_to\_protect](#input\_regions\_to\_protect) | List of regions to protect. | `list` | n/a | yes |
+| <a name="input_regions_to_protect"></a> [regions\_to\_protect](#input\_regions\_to\_protect) | List of regions to protect. | `list(string)` | n/a | yes |
 | <a name="input_rsc_service_principal_tenant_domain"></a> [rsc\_service\_principal\_tenant\_domain](#input\_rsc\_service\_principal\_tenant\_domain) | Tenant domain of the Service Principal created in RSC. | `string` | n/a | yes |
 
 ## Outputs
 
 No outputs.
-
 
 <!-- END_TF_DOCS -->
 
