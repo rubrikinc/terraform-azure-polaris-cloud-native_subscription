@@ -96,7 +96,7 @@ resource "polaris_azure_subscription" "cloud_native_protection" {
 # false, count will evaluate to 0.
 # Note, the provider currently requires Cloud Native Protection when Exocompute
 # is enabled.
-resource "polaris_azure_subscription" "cloud_native_protection_and_exocompute" {
+resource "polaris_azure_subscription" "polaris" {
   count             = var.enable_cloud_native_protection == true ? var.enable_exocompute == true ? 1 : 0 : 0
   subscription_id   = element(split("/", data.azurerm_subscription.current.id), 2)
   subscription_name = data.azurerm_subscription.current.display_name
@@ -123,7 +123,7 @@ data "azurerm_subnet" "polaris" {
 # Configure the subscription to host Exocompute.
 resource "polaris_azure_exocompute" "polaris" {
   for_each        = { for k, v in var.exocompute_details : k => v if var.enable_exocompute }
-  subscription_id = polaris_azure_subscription.cloud_native_protection_and_exocompute.0.id
+  subscription_id = polaris_azure_subscription.polaris.0.id
   region          = each.value["region"]
   subnet          = data.azurerm_subnet.polaris[each.key].id
 }
