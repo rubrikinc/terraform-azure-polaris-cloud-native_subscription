@@ -9,14 +9,14 @@ variable "azure_service_principal_object_id" {
 }
 
 variable "regions_to_protect" {
-  type        = list
+  type        = list(string)
   description = "List of regions to protect."
 }
 
 variable "delete_snapshots_on_destroy" {
-  type = bool
+  type        = bool
   description = "Should snapshots be deleted when the resource is destroyed."
-  default = false
+  default     = false
 }
 
 variable "enable_cloud_native_protection" {
@@ -31,13 +31,13 @@ variable "enable_exocompute" {
 
 variable "exocompute_details" {
   description = "Region and subnet pair to run Exocompute in."
-  type        = map(object({
-    region                    = string
-#    subnet_id = string
-    subnet_name               = string
-    vnet_name                 = string
-    vnet_resource_group_name  = string
+  type = map(object({
+    region                   = string
+    subnet_name              = string
+    vnet_name                = string
+    vnet_resource_group_name = string
   }))
+  default = {}
 }
 
 variable "polaris_credentials" {
