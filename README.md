@@ -36,7 +36,7 @@ module "polaris-azure-cloud-native_subscription" {
   }
   exocompute_details                  = {
     exocompute_config_1 = {
-      region                    = "westus2"
+      region                    = "westus"
       subnet_name               = "subnet1"
       vnet_name                 = "vnet1"
       vnet_resource_group_name  = "vnet-rg"
@@ -80,10 +80,22 @@ module "polaris-azure-cloud-native_subscription_1" {
   }
   exocompute_details                  = {
     exocompute_config_1 = {
-      region                    = "westus2"
+      region                    = "eastus"
       subnet_name               = "subnet1"
       vnet_name                 = "vnet1"
-      vnet_resource_group_name  = "vnet-rg"
+      vnet_resource_group_name  = "vnet-eastus-rg"
+    }
+    exocompute_config_2 = {
+      region                    = "westus"
+      subnet_name               = "subnet2"
+      vnet_name                 = "vnet2"
+      vnet_resource_group_name  = "vnet-westus-rg"
+    }
+    exocompute_config_3 = {
+      region                    = "westus2"
+      subnet_name               = "subnet3"
+      vnet_name                 = "vnet3"
+      vnet_resource_group_name  = "vnet-westus2-rg"
     }
   }
   polaris_credentials                 = "../.creds/customer-service-account.json"
@@ -175,9 +187,7 @@ No modules.
 | <a name="input_azure_service_principal_object_id"></a> [azure\_service\_principal\_object\_id](#input\_azure\_service\_principal\_object\_id) | Azure service principal object id. | `string` | n/a | yes |
 | <a name="input_azure_subscription_id"></a> [azure\_subscription\_id](#input\_azure\_subscription\_id) | Azure subscription id. | `string` | n/a | yes |
 | <a name="input_delete_snapshots_on_destroy"></a> [delete\_snapshots\_on\_destroy](#input\_delete\_snapshots\_on\_destroy) | Should snapshots be deleted when the resource is destroyed. | `bool` | `false` | no |
-| <a name="input_enable_cloud_native_protection"></a> [enable\_cloud\_native\_protection](#input\_enable\_cloud\_native\_protection) | Enable cloud native protection for Azure VMs. | `bool` | n/a | yes |
-| <a name="input_enable_exocompute"></a> [enable\_exocompute](#input\_enable\_exocompute) | Enable Exocompute for the subscription. | `bool` | n/a | yes |
-| <a name="input_exocompute_details"></a> [exocompute\_details](#input\_exocompute\_details) | Region and subnet pair to run Exocompute in. | <pre>map(object({<br>    region                   = string<br>    subnet_name              = string<br>    vnet_name                = string<br>    vnet_resource_group_name = string<br>  }))</pre> | `{}` | no |
+| <a name="input_exocompute_details"></a> [exocompute\_details](#input\_exocompute\_details) | Region and subnet pair to run Exocompute in. | <pre>map(object({<br>    region                   = string<br>    pod_overlay_network_cidr = string<br>    subnet_name              = string<br>    vnet_name                = string<br>    vnet_resource_group_name = string<br>  }))</pre> | `{}` | no |
 | <a name="input_polaris_credentials"></a> [polaris\_credentials](#input\_polaris\_credentials) | Full path to credentials file for RSC/Polaris. | `string` | n/a | yes |
 | <a name="input_regions_to_protect"></a> [regions\_to\_protect](#input\_regions\_to\_protect) | List of regions to protect. | `list(string)` | n/a | yes |
 | <a name="input_rsc_azure_features"></a> [rsc\_azure\_features](#input\_rsc\_azure\_features) | List of Azure features to enable. | `list(string)` | n/a | yes |

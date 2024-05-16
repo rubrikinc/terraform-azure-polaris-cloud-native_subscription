@@ -162,6 +162,7 @@ data "azurerm_subnet" "polaris" {
 resource "polaris_azure_exocompute" "polaris" {
   for_each                  = { for k, v in var.exocompute_details : k => v if contains(var.rsc_azure_features, "EXOCOMPUTE") }
   cloud_account_id          = polaris_azure_subscription.default.id
-  region          = each.value["region"]
+  pod_overlay_network_cidr  = each.value["pod_overlay_network_cidr"]
+  region                    = each.value["region"]
   subnet                    = data.azurerm_subnet.polaris[each.key].id
 }
