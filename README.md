@@ -148,14 +148,16 @@ module "polaris-azure-cloud-native_subscription_2" {
 
 ## Requirements
 
-No requirements.
+| Name | Version |
+|------|---------|
+| <a name="requirement_polaris"></a> [polaris](#requirement\_polaris) | =0.9.0-beta.3 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 3.97.1 |
-| <a name="provider_polaris"></a> [polaris](#provider\_polaris) | 0.7.7 |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | n/a |
+| <a name="provider_polaris"></a> [polaris](#provider\_polaris) | =0.9.0-beta.3 |
 
 ## Resources
 
