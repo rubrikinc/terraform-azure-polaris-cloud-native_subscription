@@ -14,6 +14,8 @@ There are a few services you'll need in order to get this project off the ground
 ## Usage
 
 ```hcl
+# Add a single subscription in a single region.
+
 terraform {
   required_providers {
     azuread = {
@@ -30,6 +32,18 @@ terraform {
 provider "azuread" {
   tenant_id = "abcdef01-2345-6789-abcd-ef0123456789"
 }
+
+# Initialize the Azure RM provider from the shell environment.
+provider "azurerm" {
+  skip_provider_registration = "true"
+  features {}
+  subscription_id = "01234567-99ab-cdef-0123-456789abcdef"
+}
+
+# Point the provider to the RSC service account to use.
+provider "polaris" {
+  credentials = "../.creds/customer-service-account.json"
+} 
 
 module "polaris-azure-cloud-native_tenant" {
   source                          = "rubrikinc/polaris-cloud-native_tenant/azure"
@@ -74,6 +88,7 @@ module "polaris-azure-cloud-native_subscription" {
 
 ```hcl
 # Add a multiple subscriptions in the same tenant with multiple regions for Exocompute
+
 terraform {
   required_providers {
     azuread = {
@@ -85,6 +100,23 @@ terraform {
     } 
   }
 }
+
+# Configure the Azure Active Directory Provider
+provider "azuread" {
+  tenant_id = "abcdef01-2345-6789-abcd-ef0123456789"
+}
+
+# Initialize the Azure RM provider from the shell environment.
+provider "azurerm" {
+  skip_provider_registration = "true"
+  features {}
+  subscription_id = "01234567-99ab-cdef-0123-456789abcdef"
+}
+
+# Point the provider to the RSC service account to use.
+provider "polaris" {
+  credentials = "../.creds/customer-service-account.json"
+} 
 
 module "polaris-azure-cloud-native_tenant" {
   source                          = "rubrikinc/polaris-cloud-native_tenant/azure"
