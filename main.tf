@@ -134,6 +134,21 @@ resource "polaris_azure_subscription" "default" {
     }
   }
 
+    dynamic "sql_db_protection" {
+    for_each = contains(var.rsc_azure_features, "AZURE_SQL_DB_PROTECTION") ? [1] : []
+    content {
+      permissions           = data.polaris_azure_permissions.default["AZURE_SQL_DB_PROTECTION"].id      
+      regions               =  var.regions_to_protect
+    }
+  }
+
+      dynamic "sql_mi_protection" {
+    for_each = contains(var.rsc_azure_features, "AZURE_SQL_MI_PROTECTION") ? [1] : []
+    content {
+      permissions           = data.polaris_azure_permissions.default["AZURE_SQL_MI_PROTECTION"].id      
+      regions               =  var.regions_to_protect
+    }
+  }
 }
 
 data "azurerm_subnet" "polaris" {
