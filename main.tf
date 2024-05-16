@@ -2,8 +2,6 @@ locals {
   exocompute_regions = flatten([
     for exocompute_detail, details in var.exocompute_details : details.region
   ])
-
-  rsc_instance_fqdn = (element(split("/", jsondecode(file("${var.polaris_credentials}")).access_token_uri), 2))
 }
 
 # The subscription the Azure RM is running with.
