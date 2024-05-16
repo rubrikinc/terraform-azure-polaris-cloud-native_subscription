@@ -1,3 +1,20 @@
+variable "azure_resource_group_name" {
+  type        = string
+  description = "Name of the Azure resource group to store snapshots and Exocompute artifacts."
+  default = "Rubrik-Backups-RG-Do-Not-Delete"
+}
+
+variable "azure_resource_group_region" {
+  type        = string
+  description = "Region of the Azure resource group to store snapshots and Exocompute artifacts."
+}
+
+variable "azure_resource_group_tags" {
+  type        = map(string)
+  description = "Tags to apply to the Azure resource group to store snapshots and Exocompute artifacts."
+  default = {}
+}
+
 variable "azure_subscription_id" {
   type        = string
   description = "Azure subscription id."

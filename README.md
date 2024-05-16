@@ -28,8 +28,12 @@ module "polaris-azure-cloud-native_subscription" {
   
   azure_service_principal_object_id   = module.polaris-azure-cloud-native_tenant.azure_service_principal_object_id
   azure_subscription_id               = "01234567-99ab-cdef-0123-456789abcdef"
-  enable_cloud_native_protection      = true
-  enable_exocompute                   = true
+  azure_resource_group_name           = "RubrikBackups-RG-DontDelete-terraform"
+  azure_resource_group_region         = "westus"
+  azure_resource_group_tags           = {
+    "Environment" = "Test"
+    "Owner"       = "Terraform" 
+  }
   exocompute_details                  = {
     exocompute_config_1 = {
       region                    = "westus2"
@@ -68,8 +72,12 @@ module "polaris-azure-cloud-native_subscription_1" {
   
   azure_service_principal_object_id   = module.polaris-azure-cloud-native_tenant.azure_service_principal_object_id
   azure_subscription_id               = "01234567-99ab-cdef-0123-456789abcdef"
-  enable_cloud_native_protection      = true
-  enable_exocompute                   = true
+  azure_resource_group_name           = "RubrikBackups-RG-DontDelete-terraform"
+  azure_resource_group_region         = "westus"
+  azure_resource_group_tags           = {
+    "Environment" = "Test"
+    "Owner"       = "Terraform" 
+  }
   exocompute_details                  = {
     exocompute_config_1 = {
       region                    = "westus2"
@@ -143,6 +151,8 @@ No requirements.
 
 | Name | Type |
 |------|------|
+| [azurerm_resource_group.default](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) | resource |
+| [azurerm_role_assignment.resource_group](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) | resource |
 | [azurerm_role_assignment.subscription](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) | resource |
 | [azurerm_role_definition.resource_group](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_definition) | resource |
 | [azurerm_role_definition.subscription](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_definition) | resource |
@@ -159,6 +169,9 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_azure_resource_group_name"></a> [azure\_resource\_group\_name](#input\_azure\_resource\_group\_name) | Name of the Azure resource group to store snapshots and Exocompute artifacts. | `string` | `"Rubrik-Backups-RG-Do-Not-Delete"` | no |
+| <a name="input_azure_resource_group_region"></a> [azure\_resource\_group\_region](#input\_azure\_resource\_group\_region) | Region of the Azure resource group to store snapshots and Exocompute artifacts. | `string` | n/a | yes |
+| <a name="input_azure_resource_group_tags"></a> [azure\_resource\_group\_tags](#input\_azure\_resource\_group\_tags) | Tags to apply to the Azure resource group to store snapshots and Exocompute artifacts. | `map(string)` | `{}` | no |
 | <a name="input_azure_service_principal_object_id"></a> [azure\_service\_principal\_object\_id](#input\_azure\_service\_principal\_object\_id) | Azure service principal object id. | `string` | n/a | yes |
 | <a name="input_azure_subscription_id"></a> [azure\_subscription\_id](#input\_azure\_subscription\_id) | Azure subscription id. | `string` | n/a | yes |
 | <a name="input_delete_snapshots_on_destroy"></a> [delete\_snapshots\_on\_destroy](#input\_delete\_snapshots\_on\_destroy) | Should snapshots be deleted when the resource is destroyed. | `bool` | `false` | no |

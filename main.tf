@@ -14,11 +14,11 @@ data "polaris_azure_permissions" "default" {
   feature = each.key
 }
 
-data "polaris_azure_permissions" "cloud_native_protection" {
-  count = var.enable_cloud_native_protection == true ? 1 : 0
-  features = [
-    "cloud-native-protection"
-  ]
+# Add Azure Resource Group to for snapshots and Exocompute artifacts.
+resource "azurerm_resource_group" "default" {
+  name     = var.azure_resource_group_name
+  location = var.azure_resource_group_region
+  tags     = var.azure_resource_group_tags
 }
 
 # Create a role scoped to the subscription in Azure for each feature with the required
@@ -84,28 +84,9 @@ resource "polaris_azure_subscription" "default" {
     content {
       permissions           = data.polaris_azure_permissions.default["CLOUD_NATIVE_PROTECTION"].id      
       regions               =  var.regions_to_protect
-}
-
-# Add the Azure subscription to RSC enabling both Cloud Native Protection and
-# Exocompute. If either enable_cloud_native_protection or enable_exocompute is
-# false, count will evaluate to 0.
-# Note, the provider currently requires Cloud Native Protection when Exocompute
-# is enabled.
-resource "polaris_azure_subscription" "polaris" {
-  count             = var.enable_cloud_native_protection == true ? var.enable_exocompute == true ? 1 : 0 : 0
-  subscription_id   = element(split("/", data.azurerm_subscription.current.id), 2)
-  subscription_name = data.azurerm_subscription.current.display_name
-  tenant_domain     = var.rsc_service_principal_tenant_domain
-
-  cloud_native_protection {
-    regions = var.regions_to_protect
-  }
-
-  exocompute {
-    regions = local.exocompute_regions
-  }
-
-  delete_snapshots_on_destroy = var.delete_snapshots_on_destroy == true ? true : false
+      resource_group_name   =  var.azure_resource_group_name
+      resource_group_region =  var.azure_resource_group_region
+      resource_group_tags   =  var.azure_resource_group_tags
     }
   }
 
@@ -114,6 +95,9 @@ resource "polaris_azure_subscription" "polaris" {
     content {
       permissions           = data.polaris_azure_permissions.default["EXOCOMPUTE"].id      
       regions               =  var.regions_to_protect
+      resource_group_name   =  var.azure_resource_group_name
+      resource_group_region =  var.azure_resource_group_region
+      resource_group_tags   =  var.azure_resource_group_tags
     }
   }
 
