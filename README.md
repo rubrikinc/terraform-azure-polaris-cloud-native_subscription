@@ -14,7 +14,36 @@ There are a few services you'll need in order to get this project off the ground
 ## Usage
 
 ```hcl
-# Add a single subscription
+# Add a single subscription in a single region.
+
+terraform {
+  required_providers {
+    azuread = {
+      source  = "hashicorp/azuread"
+    }
+    polaris = {
+      source  = "rubrikinc/polaris"
+      version = "0.9.0-beta.1"
+    } 
+  }
+}
+
+# Configure the Azure Active Directory Provider
+provider "azuread" {
+  tenant_id = "abcdef01-2345-6789-abcd-ef0123456789"
+}
+
+# Initialize the Azure RM provider from the shell environment.
+provider "azurerm" {
+  skip_provider_registration = "true"
+  features {}
+  subscription_id = "01234567-99ab-cdef-0123-456789abcdef"
+}
+
+# Point the provider to the RSC service account to use.
+provider "polaris" {
+  credentials = "../.creds/customer-service-account.json"
+} 
 
 module "polaris-azure-cloud-native_tenant" {
   source                          = "rubrikinc/polaris-cloud-native_tenant/azure"
@@ -28,24 +57,66 @@ module "polaris-azure-cloud-native_subscription" {
   
   azure_service_principal_object_id   = module.polaris-azure-cloud-native_tenant.azure_service_principal_object_id
   azure_subscription_id               = "01234567-99ab-cdef-0123-456789abcdef"
-  enable_cloud_native_protection      = true
-  enable_exocompute                   = true
+  azure_resource_group_name           = "RubrikBackups-RG-DontDelete-terraform"
+  azure_resource_group_region         = "westus"
+  azure_resource_group_tags           = {
+    "Environment" = "Test"
+    "Owner"       = "Terraform" 
+  }
   exocompute_details                  = {
     exocompute_config_1 = {
-      region                    = "westus2"
+      region                    = "westus"
       subnet_name               = "subnet1"
       vnet_name                 = "vnet1"
       vnet_resource_group_name  = "vnet-rg"
     }
   }
   polaris_credentials                 = "../.creds/customer-service-account.json"
-  regions_to_protect                  = ["westus","westus2","eastus"]
+  regions_to_protect                  = ["westus"]
+  rsc_azure_features                  = [
+                                          "AZURE_SQL_DB_PROTECTION",
+                                          "AZURE_SQL_MI_PROTECTION",
+                                          "CLOUD_NATIVE_ARCHIVAL",
+                                          "CLOUD_NATIVE_ARCHIVAL_ENCRYPTION",
+                                          "CLOUD_NATIVE_PROTECTION",
+                                          "EXOCOMPUTE"
+                                        ]
   rsc_service_principal_tenant_domain = module.polaris-azure-cloud-native_tenant.rsc_service_principal_tenant_domain
 }
 ```
 
 ```hcl
-# Add a multiple subscriptions in the same tenant with multiple regions for Exocompute
+# Add a multiple subscriptions in the same tenant with multiple regions for Exocompute.
+# Using shared Exocompute 
+
+terraform {
+  required_providers {
+    azuread = {
+      source  = "hashicorp/azuread"
+    }
+    polaris = {
+      source  = "rubrikinc/polaris"
+      version = "0.9.0-beta.1"
+    } 
+  }
+}
+
+# Configure the Azure Active Directory Provider
+provider "azuread" {
+  tenant_id = "abcdef01-2345-6789-abcd-ef0123456789"
+}
+
+# Initialize the Azure RM provider from the shell environment.
+provider "azurerm" {
+  skip_provider_registration = "true"
+  features {}
+  subscription_id = "01234567-99ab-cdef-0123-456789abcdef"
+}
+
+# Point the provider to the RSC service account to use.
+provider "polaris" {
+  credentials = "../.creds/customer-service-account.json"
+} 
 
 module "polaris-azure-cloud-native_tenant" {
   source                          = "rubrikinc/polaris-cloud-native_tenant/azure"
@@ -59,18 +130,39 @@ module "polaris-azure-cloud-native_subscription_1" {
   
   azure_service_principal_object_id   = module.polaris-azure-cloud-native_tenant.azure_service_principal_object_id
   azure_subscription_id               = "01234567-99ab-cdef-0123-456789abcdef"
-  enable_cloud_native_protection      = true
-  enable_exocompute                   = true
+  azure_resource_group_name           = "RubrikBackups-RG-DontDelete-terraform"
+  azure_resource_group_region         = "westus"
+  azure_resource_group_tags           = {
+    "Environment" = "Test"
+    "Owner"       = "Terraform" 
+  }
   exocompute_details                  = {
     exocompute_config_1 = {
-      region                    = "westus2"
+      region                    = "eastus"
       subnet_name               = "subnet1"
       vnet_name                 = "vnet1"
-      vnet_resource_group_name  = "vnet-rg"
+      vnet_resource_group_name  = "vnet-eastus-rg"
+    }
+    exocompute_config_2 = {
+      region                    = "westus"
+      subnet_name               = "subnet2"
+      vnet_name                 = "vnet2"
+      vnet_resource_group_name  = "vnet-westus-rg"
+    }
+    exocompute_config_3 = {
+      region                    = "westus2"
+      subnet_name               = "subnet3"
+      vnet_name                 = "vnet3"
+      vnet_resource_group_name  = "vnet-westus2-rg"
     }
   }
   polaris_credentials                 = "../.creds/customer-service-account.json"
   regions_to_protect                  = ["westus","westus2","eastus"]
+  rsc_azure_features                  = [
+                                          "CLOUD_NATIVE_ARCHIVAL",
+                                          "CLOUD_NATIVE_ARCHIVAL_ENCRYPTION",
+                                          "EXOCOMPUTE"
+                                        ]
   rsc_service_principal_tenant_domain = module.polaris-azure-cloud-native_tenant.rsc_service_principal_tenant_domain
 }
 
@@ -79,27 +171,27 @@ module "polaris-azure-cloud-native_subscription_2" {
   
   azure_service_principal_object_id   = module.polaris-azure-cloud-native_tenant.azure_service_principal_object_id
   azure_subscription_id               = "01234567-99ab-cdef-fedc-ba987654"
-  enable_cloud_native_protection      = true
-  enable_exocompute                   = true
-  exocompute_details                  = {
-    exocompute_config_1 = {
-      region                    = "eastus"
-      subnet_name               = "subnet2"
-      vnet_name                 = "vnet2"
-      vnet_resource_group_name  = "vnet2-rg"
-    }
-    exocompute_config_2 = {
-      region                    = "westus"
-      subnet_name               = "subnet3"
-      vnet_name                 = "vnet3"
-      vnet_resource_group_name  = "vnet3-rg"
-    }
+  azure_resource_group_name           = "RubrikBackups-RG-DontDelete-terraform"
+  azure_resource_group_region         = "westus"
+  azure_resource_group_tags           = {
+    "Environment" = "Test"
+    "Owner"       = "Terraform" 
   }
   polaris_credentials                 = "../.creds/customer-service-account.json"
-  regions_to_protect                  = ["westus","westus2","eastus"]
+  regions_to_protect                  = ["westus","eastus"]
+  rsc_azure_features                  = [
+                                          "CLOUD_NATIVE_PROTECTION",
+                                          "AZURE_SQL_DB_PROTECTION",
+                                          "AZURE_SQL_MI_PROTECTION",
+                                          "EXOCOMPUTE"
+                                        ]
   rsc_service_principal_tenant_domain = module.polaris-azure-cloud-native_tenant.rsc_service_principal_tenant_domain
 }
 
+resource "polaris_azure_exocompute" "subscription_2" {
+  cloud_account_id      = module.polaris-azure-cloud-native_subscription_2.polaris_azure_subscription_id
+  host_cloud_account_id = module.polaris-azure-cloud-native_subscription_1.polaris_azure_subscription_id
+}
 ```
 
 <!-- BEGIN_TF_DOCS -->
@@ -107,30 +199,32 @@ module "polaris-azure-cloud-native_subscription_2" {
 
 ## Requirements
 
-No requirements.
+| Name | Version |
+|------|---------|
+| <a name="requirement_polaris"></a> [polaris](#requirement\_polaris) | =0.9.0-beta.3 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 3.97.1 |
-| <a name="provider_polaris"></a> [polaris](#provider\_polaris) | 0.7.7 |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | n/a |
+| <a name="provider_polaris"></a> [polaris](#provider\_polaris) | =0.9.0-beta.3 |
 
 ## Resources
 
 | Name | Type |
 |------|------|
-| [azurerm_role_assignment.cloud_native_protection](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) | resource |
-| [azurerm_role_assignment.exocompute](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) | resource |
-| [azurerm_role_definition.cloud_native_protection](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_definition) | resource |
-| [azurerm_role_definition.exocompute](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_definition) | resource |
-| [polaris_azure_exocompute.polaris](https://registry.terraform.io/providers/rubrikinc/polaris/latest/docs/resources/azure_exocompute) | resource |
-| [polaris_azure_subscription.cloud_native_protection](https://registry.terraform.io/providers/rubrikinc/polaris/latest/docs/resources/azure_subscription) | resource |
-| [polaris_azure_subscription.polaris](https://registry.terraform.io/providers/rubrikinc/polaris/latest/docs/resources/azure_subscription) | resource |
+| [azurerm_resource_group.default](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) | resource |
+| [azurerm_role_assignment.resource_group](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) | resource |
+| [azurerm_role_assignment.subscription](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) | resource |
+| [azurerm_role_definition.resource_group](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_definition) | resource |
+| [azurerm_role_definition.subscription](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_definition) | resource |
+| [azurerm_user_assigned_identity.default](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/user_assigned_identity) | resource |
+| [polaris_azure_exocompute.polaris](https://registry.terraform.io/providers/rubrikinc/polaris/0.9.0-beta.3/docs/resources/azure_exocompute) | resource |
+| [polaris_azure_subscription.default](https://registry.terraform.io/providers/rubrikinc/polaris/0.9.0-beta.3/docs/resources/azure_subscription) | resource |
 | [azurerm_subnet.polaris](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/subnet) | data source |
 | [azurerm_subscription.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/subscription) | data source |
-| [polaris_azure_permissions.cloud_native_protection](https://registry.terraform.io/providers/rubrikinc/polaris/latest/docs/data-sources/azure_permissions) | data source |
-| [polaris_azure_permissions.exocompute](https://registry.terraform.io/providers/rubrikinc/polaris/latest/docs/data-sources/azure_permissions) | data source |
+| [polaris_azure_permissions.default](https://registry.terraform.io/providers/rubrikinc/polaris/0.9.0-beta.3/docs/data-sources/azure_permissions) | data source |
 
 ## Modules
 
@@ -140,19 +234,24 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_azure_resource_group_name"></a> [azure\_resource\_group\_name](#input\_azure\_resource\_group\_name) | Name of the Azure resource group to store snapshots and Exocompute artifacts. | `string` | `"Rubrik-Backups-RG-Do-Not-Delete"` | no |
+| <a name="input_azure_resource_group_region"></a> [azure\_resource\_group\_region](#input\_azure\_resource\_group\_region) | Region of the Azure resource group to store snapshots and Exocompute artifacts. | `string` | n/a | yes |
+| <a name="input_azure_resource_group_tags"></a> [azure\_resource\_group\_tags](#input\_azure\_resource\_group\_tags) | Tags to apply to the Azure resource group to store snapshots and Exocompute artifacts. | `map(string)` | `{}` | no |
 | <a name="input_azure_service_principal_object_id"></a> [azure\_service\_principal\_object\_id](#input\_azure\_service\_principal\_object\_id) | Azure service principal object id. | `string` | n/a | yes |
 | <a name="input_azure_subscription_id"></a> [azure\_subscription\_id](#input\_azure\_subscription\_id) | Azure subscription id. | `string` | n/a | yes |
 | <a name="input_delete_snapshots_on_destroy"></a> [delete\_snapshots\_on\_destroy](#input\_delete\_snapshots\_on\_destroy) | Should snapshots be deleted when the resource is destroyed. | `bool` | `false` | no |
-| <a name="input_enable_cloud_native_protection"></a> [enable\_cloud\_native\_protection](#input\_enable\_cloud\_native\_protection) | Enable cloud native protection for Azure VMs. | `bool` | n/a | yes |
-| <a name="input_enable_exocompute"></a> [enable\_exocompute](#input\_enable\_exocompute) | Enable Exocompute for the subscription. | `bool` | n/a | yes |
-| <a name="input_exocompute_details"></a> [exocompute\_details](#input\_exocompute\_details) | Region and subnet pair to run Exocompute in. | <pre>map(object({<br>    region                   = string<br>    subnet_name              = string<br>    vnet_name                = string<br>    vnet_resource_group_name = string<br>  }))</pre> | `{}` | no |
+| <a name="input_exocompute_details"></a> [exocompute\_details](#input\_exocompute\_details) | Region and subnet pair to run Exocompute in. | <pre>map(object({<br>    region                   = string<br>    pod_overlay_network_cidr = string<br>    subnet_name              = string<br>    vnet_name                = string<br>    vnet_resource_group_name = string<br>  }))</pre> | `{}` | no |
 | <a name="input_polaris_credentials"></a> [polaris\_credentials](#input\_polaris\_credentials) | Full path to credentials file for RSC/Polaris. | `string` | n/a | yes |
 | <a name="input_regions_to_protect"></a> [regions\_to\_protect](#input\_regions\_to\_protect) | List of regions to protect. | `list(string)` | n/a | yes |
+| <a name="input_rsc_azure_features"></a> [rsc\_azure\_features](#input\_rsc\_azure\_features) | List of Azure features to enable. | `list(string)` | n/a | yes |
 | <a name="input_rsc_service_principal_tenant_domain"></a> [rsc\_service\_principal\_tenant\_domain](#input\_rsc\_service\_principal\_tenant\_domain) | Tenant domain of the Service Principal created in RSC. | `string` | n/a | yes |
 
 ## Outputs
 
-No outputs.
+| Name | Description |
+|------|-------------|
+| <a name="output_polaris_azure_subscription_id"></a> [polaris\_azure\_subscription\_id](#output\_polaris\_azure\_subscription\_id) | n/a |
+
 
 <!-- END_TF_DOCS -->
 
