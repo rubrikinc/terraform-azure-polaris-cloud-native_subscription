@@ -195,7 +195,10 @@ No modules.
 
 ## Outputs
 
-No outputs.
+| Name | Description |
+|------|-------------|
+| <a name="output_polaris_azure_subscription_id"></a> [polaris\_azure\_subscription\_id](#output\_polaris\_azure\_subscription\_id) | n/a |
+
 
 <!-- END_TF_DOCS -->
 
