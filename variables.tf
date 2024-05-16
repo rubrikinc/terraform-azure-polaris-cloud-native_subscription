@@ -45,6 +45,11 @@ variable "polaris_credentials" {
   description = "Full path to credentials file for RSC/Polaris."
 }
 
+variable "rsc_azure_features" {
+  type        = list(string)
+  description = "List of Azure features to enable."
+}
+
 variable "rsc_service_principal_tenant_domain" {
   type        = string
   description = "Tenant domain of the Service Principal created in RSC."

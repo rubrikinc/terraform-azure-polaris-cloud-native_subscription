@@ -39,7 +39,16 @@ module "polaris-azure-cloud-native_subscription" {
     }
   }
   polaris_credentials                 = "../.creds/customer-service-account.json"
-  regions_to_protect                  = ["westus","westus2","eastus"]
+  regions_to_protect                  = ["westus"]
+  rsc_azure_features                  = [
+                                          "AZURE_SQL_DB_PROTECTION",
+                                          "AZURE_SQL_MI_PROTECTION",
+                                          "CLOUD_NATIVE_ARCHIVAL",
+                                          "CLOUD_NATIVE_ARCHIVAL_ENCRYPTION",
+                                          "CLOUD_NATIVE_PROTECTION",
+                                          "EXOCOMPUTE"
+                                        ]
+
   rsc_service_principal_tenant_domain = module.polaris-azure-cloud-native_tenant.rsc_service_principal_tenant_domain
 }
 ```
@@ -71,6 +80,14 @@ module "polaris-azure-cloud-native_subscription_1" {
   }
   polaris_credentials                 = "../.creds/customer-service-account.json"
   regions_to_protect                  = ["westus","westus2","eastus"]
+  rsc_azure_features                  = [
+                                          "AZURE_SQL_DB_PROTECTION",
+                                          "AZURE_SQL_MI_PROTECTION",
+                                          "CLOUD_NATIVE_ARCHIVAL",
+                                          "CLOUD_NATIVE_ARCHIVAL_ENCRYPTION",
+                                          "CLOUD_NATIVE_PROTECTION",
+                                          "EXOCOMPUTE"
+                                        ]
   rsc_service_principal_tenant_domain = module.polaris-azure-cloud-native_tenant.rsc_service_principal_tenant_domain
 }
 
@@ -96,7 +113,13 @@ module "polaris-azure-cloud-native_subscription_2" {
     }
   }
   polaris_credentials                 = "../.creds/customer-service-account.json"
-  regions_to_protect                  = ["westus","westus2","eastus"]
+  regions_to_protect                  = ["westus","eastus"]
+  rsc_azure_features                  = [
+                                          "CLOUD_NATIVE_ARCHIVAL",
+                                          "CLOUD_NATIVE_ARCHIVAL_ENCRYPTION",
+                                          "CLOUD_NATIVE_PROTECTION",
+                                          "EXOCOMPUTE"
+                                        ]
   rsc_service_principal_tenant_domain = module.polaris-azure-cloud-native_tenant.rsc_service_principal_tenant_domain
 }
 
@@ -120,17 +143,13 @@ No requirements.
 
 | Name | Type |
 |------|------|
-| [azurerm_role_assignment.cloud_native_protection](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) | resource |
-| [azurerm_role_assignment.exocompute](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) | resource |
-| [azurerm_role_definition.cloud_native_protection](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_definition) | resource |
-| [azurerm_role_definition.exocompute](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_definition) | resource |
-| [polaris_azure_exocompute.polaris](https://registry.terraform.io/providers/rubrikinc/polaris/latest/docs/resources/azure_exocompute) | resource |
-| [polaris_azure_subscription.cloud_native_protection](https://registry.terraform.io/providers/rubrikinc/polaris/latest/docs/resources/azure_subscription) | resource |
-| [polaris_azure_subscription.polaris](https://registry.terraform.io/providers/rubrikinc/polaris/latest/docs/resources/azure_subscription) | resource |
+| [azurerm_role_assignment.subscription](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) | resource |
+| [azurerm_role_definition.resource_group](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_definition) | resource |
+| [azurerm_role_definition.subscription](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_definition) | resource |
+| [polaris_azure_subscription.default](https://registry.terraform.io/providers/rubrikinc/polaris/0.9.0-beta.3/docs/resources/azure_subscription) | resource |
 | [azurerm_subnet.polaris](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/subnet) | data source |
 | [azurerm_subscription.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/subscription) | data source |
-| [polaris_azure_permissions.cloud_native_protection](https://registry.terraform.io/providers/rubrikinc/polaris/latest/docs/data-sources/azure_permissions) | data source |
-| [polaris_azure_permissions.exocompute](https://registry.terraform.io/providers/rubrikinc/polaris/latest/docs/data-sources/azure_permissions) | data source |
+| [polaris_azure_permissions.default](https://registry.terraform.io/providers/rubrikinc/polaris/0.9.0-beta.3/docs/data-sources/azure_permissions) | data source |
 
 ## Modules
 
@@ -148,6 +167,7 @@ No modules.
 | <a name="input_exocompute_details"></a> [exocompute\_details](#input\_exocompute\_details) | Region and subnet pair to run Exocompute in. | <pre>map(object({<br>    region                   = string<br>    subnet_name              = string<br>    vnet_name                = string<br>    vnet_resource_group_name = string<br>  }))</pre> | `{}` | no |
 | <a name="input_polaris_credentials"></a> [polaris\_credentials](#input\_polaris\_credentials) | Full path to credentials file for RSC/Polaris. | `string` | n/a | yes |
 | <a name="input_regions_to_protect"></a> [regions\_to\_protect](#input\_regions\_to\_protect) | List of regions to protect. | `list(string)` | n/a | yes |
+| <a name="input_rsc_azure_features"></a> [rsc\_azure\_features](#input\_rsc\_azure\_features) | List of Azure features to enable. | `list(string)` | n/a | yes |
 | <a name="input_rsc_service_principal_tenant_domain"></a> [rsc\_service\_principal\_tenant\_domain](#input\_rsc\_service\_principal\_tenant\_domain) | Tenant domain of the Service Principal created in RSC. | `string` | n/a | yes |
 
 ## Outputs
