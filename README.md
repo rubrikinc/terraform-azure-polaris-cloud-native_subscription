@@ -81,13 +81,13 @@ module "polaris-azure-cloud-native_subscription" {
                                           "CLOUD_NATIVE_PROTECTION",
                                           "EXOCOMPUTE"
                                         ]
-
   rsc_service_principal_tenant_domain = module.polaris-azure-cloud-native_tenant.rsc_service_principal_tenant_domain
 }
 ```
 
 ```hcl
-# Add a multiple subscriptions in the same tenant with multiple regions for Exocompute
+# Add a multiple subscriptions in the same tenant with multiple regions for Exocompute.
+# Using shared Exocompute 
 
 terraform {
   required_providers {
@@ -159,11 +159,8 @@ module "polaris-azure-cloud-native_subscription_1" {
   polaris_credentials                 = "../.creds/customer-service-account.json"
   regions_to_protect                  = ["westus","westus2","eastus"]
   rsc_azure_features                  = [
-                                          "AZURE_SQL_DB_PROTECTION",
-                                          "AZURE_SQL_MI_PROTECTION",
                                           "CLOUD_NATIVE_ARCHIVAL",
                                           "CLOUD_NATIVE_ARCHIVAL_ENCRYPTION",
-                                          "CLOUD_NATIVE_PROTECTION",
                                           "EXOCOMPUTE"
                                         ]
   rsc_service_principal_tenant_domain = module.polaris-azure-cloud-native_tenant.rsc_service_principal_tenant_domain
@@ -174,31 +171,27 @@ module "polaris-azure-cloud-native_subscription_2" {
   
   azure_service_principal_object_id   = module.polaris-azure-cloud-native_tenant.azure_service_principal_object_id
   azure_subscription_id               = "01234567-99ab-cdef-fedc-ba987654"
-  exocompute_details                  = {
-    exocompute_config_1 = {
-      region                    = "eastus"
-      subnet_name               = "subnet2"
-      vnet_name                 = "vnet2"
-      vnet_resource_group_name  = "vnet2-rg"
-    }
-    exocompute_config_2 = {
-      region                    = "westus"
-      subnet_name               = "subnet3"
-      vnet_name                 = "vnet3"
-      vnet_resource_group_name  = "vnet3-rg"
-    }
+  azure_resource_group_name           = "RubrikBackups-RG-DontDelete-terraform"
+  azure_resource_group_region         = "westus"
+  azure_resource_group_tags           = {
+    "Environment" = "Test"
+    "Owner"       = "Terraform" 
   }
   polaris_credentials                 = "../.creds/customer-service-account.json"
   regions_to_protect                  = ["westus","eastus"]
   rsc_azure_features                  = [
-                                          "CLOUD_NATIVE_ARCHIVAL",
-                                          "CLOUD_NATIVE_ARCHIVAL_ENCRYPTION",
                                           "CLOUD_NATIVE_PROTECTION",
+                                          "AZURE_SQL_DB_PROTECTION",
+                                          "AZURE_SQL_MI_PROTECTION",
                                           "EXOCOMPUTE"
                                         ]
   rsc_service_principal_tenant_domain = module.polaris-azure-cloud-native_tenant.rsc_service_principal_tenant_domain
 }
 
+resource "polaris_azure_exocompute" "subscription_2" {
+  cloud_account_id      = module.polaris-azure-cloud-native_subscription_2.polaris_azure_subscription_id
+  host_cloud_account_id = module.polaris-azure-cloud-native_subscription_1.polaris_azure_subscription_id
+}
 ```
 
 <!-- BEGIN_TF_DOCS -->
