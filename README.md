@@ -156,6 +156,8 @@ No requirements.
 | [azurerm_role_assignment.subscription](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) | resource |
 | [azurerm_role_definition.resource_group](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_definition) | resource |
 | [azurerm_role_definition.subscription](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_definition) | resource |
+| [azurerm_user_assigned_identity.default](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/user_assigned_identity) | resource |
+| [polaris_azure_exocompute.polaris](https://registry.terraform.io/providers/rubrikinc/polaris/0.9.0-beta.3/docs/resources/azure_exocompute) | resource |
 | [polaris_azure_subscription.default](https://registry.terraform.io/providers/rubrikinc/polaris/0.9.0-beta.3/docs/resources/azure_subscription) | resource |
 | [azurerm_subnet.polaris](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/subnet) | data source |
 | [azurerm_subscription.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/subscription) | data source |
