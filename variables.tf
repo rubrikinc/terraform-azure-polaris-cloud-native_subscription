@@ -40,6 +40,7 @@ variable "exocompute_details" {
   description = "Region and subnet pair to run Exocompute in."
   type = map(object({
     region                   = string
+    pod_overlay_network_cidr = string
     subnet_name              = string
     vnet_name                = string
     vnet_resource_group_name = string
