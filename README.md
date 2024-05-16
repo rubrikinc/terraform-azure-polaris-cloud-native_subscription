@@ -14,7 +14,22 @@ There are a few services you'll need in order to get this project off the ground
 ## Usage
 
 ```hcl
-# Add a single subscription
+terraform {
+  required_providers {
+    azuread = {
+      source  = "hashicorp/azuread"
+    }
+    polaris = {
+      source  = "rubrikinc/polaris"
+      version = "0.9.0-beta.1"
+    } 
+  }
+}
+
+# Configure the Azure Active Directory Provider
+provider "azuread" {
+  tenant_id = "abcdef01-2345-6789-abcd-ef0123456789"
+}
 
 module "polaris-azure-cloud-native_tenant" {
   source                          = "rubrikinc/polaris-cloud-native_tenant/azure"
@@ -59,6 +74,17 @@ module "polaris-azure-cloud-native_subscription" {
 
 ```hcl
 # Add a multiple subscriptions in the same tenant with multiple regions for Exocompute
+terraform {
+  required_providers {
+    azuread = {
+      source  = "hashicorp/azuread"
+    }
+    polaris = {
+      source  = "rubrikinc/polaris"
+      version = "0.9.0-beta.1"
+    } 
+  }
+}
 
 module "polaris-azure-cloud-native_tenant" {
   source                          = "rubrikinc/polaris-cloud-native_tenant/azure"
