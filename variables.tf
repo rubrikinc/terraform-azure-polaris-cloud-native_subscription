@@ -36,16 +36,6 @@ variable "delete_snapshots_on_destroy" {
   default     = false
 }
 
-variable "enable_cloud_native_protection" {
-  type        = bool
-  description = "Enable cloud native protection for Azure VMs."
-}
-
-variable "enable_exocompute" {
-  type        = bool
-  description = "Enable Exocompute for the subscription."
-}
-
 variable "exocompute_details" {
   description = "Region and subnet pair to run Exocompute in."
   type = map(object({

@@ -104,8 +104,6 @@ module "polaris-azure-cloud-native_subscription_2" {
   
   azure_service_principal_object_id   = module.polaris-azure-cloud-native_tenant.azure_service_principal_object_id
   azure_subscription_id               = "01234567-99ab-cdef-fedc-ba987654"
-  enable_cloud_native_protection      = true
-  enable_exocompute                   = true
   exocompute_details                  = {
     exocompute_config_1 = {
       region                    = "eastus"
