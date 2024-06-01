@@ -12,7 +12,7 @@ data "azurerm_subscription" "current" {
 data "polaris_azure_permissions" "default" {
   for_each = toset(var.rsc_azure_features)
   
-  features = each.key
+  features = [each.key]
 }
 
 # Add Azure Resource Group to for snapshots and Exocompute artifacts.
