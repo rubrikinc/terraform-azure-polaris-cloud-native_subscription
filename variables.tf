@@ -1,7 +1,7 @@
 variable "azure_resource_group_name" {
   type        = string
   description = "Name of the Azure resource group to store snapshots and Exocompute artifacts."
-  default = "Rubrik-Backups-RG-Do-Not-Delete"
+  default = "Rubrik-Backups-RG"
 }
 
 variable "azure_resource_group_region" {
@@ -37,7 +37,7 @@ variable "delete_snapshots_on_destroy" {
 }
 
 variable "exocompute_details" {
-  description = "Region and subnet pair to run Exocompute in."
+  description = "Region, VNet, Subnet and pod CIDR for Exocompute."
   type = map(object({
     region                   = string
     pod_overlay_network_cidr = string
