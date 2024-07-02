@@ -12,7 +12,7 @@ data "azurerm_subscription" "current" {
 data "polaris_azure_permissions" "default" {
   for_each = toset(var.rsc_azure_features)
   
-  features = [each.key]
+  feature = each.key
 }
 
 # Add Azure Resource Group to for snapshots and Exocompute artifacts.
@@ -43,16 +43,25 @@ resource "azurerm_role_definition" "subscription" {
 # permissions.
 resource "azurerm_role_definition" "resource_group" {
   for_each = toset(var.rsc_azure_features)
-  
-  name        = "Rubrik Security Cloud RGRole ${each.key} - terraform - ${data.azurerm_subscription.current.subscription_id}"
+  name     = "Rubrik Security Cloud RGRole ${each.key} - terraform - ${data.azurerm_subscription.current.subscription_id}"
   description = "Rubrik Security Cloud Resource Group role for ${each.key} - Terraform Generated"
-  scope       = azurerm_resource_group.default.id
+  scope    = azurerm_resource_group.default.id
 
-  permissions {
-    actions          = data.polaris_azure_permissions.default[each.key].resource_group_actions
-    data_actions     = data.polaris_azure_permissions.default[each.key].resource_group_data_actions
-    not_actions      = data.polaris_azure_permissions.default[each.key].resource_group_not_actions
-    not_data_actions = data.polaris_azure_permissions.default[each.key].resource_group_not_data_actions
+  dynamic "permissions" {
+    for_each = length(
+      concat(
+        data.polaris_azure_permissions.default[each.value].resource_group_actions,
+        data.polaris_azure_permissions.default[each.value].resource_group_data_actions,
+        data.polaris_azure_permissions.default[each.value].resource_group_not_actions,
+        data.polaris_azure_permissions.default[each.value].resource_group_not_data_actions
+      )
+    ) > 0 ? [1] : []
+    content {
+      actions          = data.polaris_azure_permissions.default[each.key].resource_group_actions
+      data_actions     = data.polaris_azure_permissions.default[each.key].resource_group_data_actions
+      not_actions      = data.polaris_azure_permissions.default[each.key].resource_group_not_actions
+      not_data_actions = data.polaris_azure_permissions.default[each.key].resource_group_not_data_actions
+    }
   }
 }
 
