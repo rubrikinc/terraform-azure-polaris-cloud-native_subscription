@@ -1,7 +1,9 @@
 locals {
-  exocompute_regions = flatten([
-    for exocompute_detail, details in var.exocompute_details : details.region
-  ])
+  exocompute_regions = flatten(
+    [
+      for exocompute_detail, details in var.exocompute_details : details.region
+    ]
+  )
 }
 
 # The subscription the Azure RM is running with.
@@ -43,9 +45,10 @@ resource "azurerm_role_definition" "subscription" {
 # permissions.
 resource "azurerm_role_definition" "resource_group" {
   for_each = toset(var.rsc_azure_features)
-  name     = "Rubrik Security Cloud RGRole ${each.key} - terraform - ${data.azurerm_subscription.current.subscription_id}"
+
+  name        = "Rubrik Security Cloud RGRole ${each.key} - terraform - ${data.azurerm_subscription.current.subscription_id}"
   description = "Rubrik Security Cloud Resource Group role for ${each.key} - Terraform Generated"
-  scope    = azurerm_resource_group.default.id
+  scope       = azurerm_resource_group.default.id
 
   dynamic "permissions" {
     for_each = length(
@@ -87,6 +90,7 @@ resource "azurerm_role_assignment" "resource_group" {
 
 resource "azurerm_user_assigned_identity" "default" {
   count = contains(var.rsc_azure_features, "CLOUD_NATIVE_ARCHIVAL_ENCRYPTION") ? 1 : 0
+
   location            = azurerm_resource_group.default.location
   name                = "RubrikManagedIdentity-terraform-${data.azurerm_subscription.current.subscription_id}"
   resource_group_name = azurerm_resource_group.default.name
@@ -120,9 +124,9 @@ resource "polaris_azure_subscription" "default" {
       resource_group_name   =  var.azure_resource_group_name
       resource_group_region =  var.azure_resource_group_region
       resource_group_tags   =  var.azure_resource_group_tags
-      user_assigned_managed_identity_name = azurerm_user_assigned_identity.default[0].name
+      user_assigned_managed_identity_name         = azurerm_user_assigned_identity.default[0].name
       user_assigned_managed_identity_principal_id = azurerm_user_assigned_identity.default[0].principal_id
-      user_assigned_managed_identity_region = var.azure_resource_group_region
+      user_assigned_managed_identity_region       = var.azure_resource_group_region
       user_assigned_managed_identity_resource_group_name = azurerm_resource_group.default.name
     }
   }
@@ -155,8 +159,8 @@ resource "polaris_azure_subscription" "default" {
     for_each = contains(var.rsc_azure_features, "AZURE_SQL_DB_PROTECTION") ? [1] : []
     
     content {
-      permissions           =  data.polaris_azure_permissions.default["AZURE_SQL_DB_PROTECTION"].id      
-      regions               =  var.regions_to_protect
+      permissions =  data.polaris_azure_permissions.default["AZURE_SQL_DB_PROTECTION"].id      
+      regions     =  var.regions_to_protect
     }
   }
 
@@ -164,14 +168,14 @@ resource "polaris_azure_subscription" "default" {
     for_each = contains(var.rsc_azure_features, "AZURE_SQL_MI_PROTECTION") ? [1] : []
     
     content {
-      permissions           =  data.polaris_azure_permissions.default["AZURE_SQL_MI_PROTECTION"].id      
-      regions               =  var.regions_to_protect
+      permissions =  data.polaris_azure_permissions.default["AZURE_SQL_MI_PROTECTION"].id      
+      regions     =  var.regions_to_protect
     }
   }
 }
 
 data "azurerm_subnet" "polaris" {
-  for_each             = { for k, v in var.exocompute_details : k => v if contains(var.rsc_azure_features, "EXOCOMPUTE") }
+  for_each = { for k, v in var.exocompute_details : k => v if contains(var.rsc_azure_features, "EXOCOMPUTE") }
   
   name                 = each.value["subnet_name"]
   virtual_network_name = each.value["vnet_name"]
@@ -180,7 +184,7 @@ data "azurerm_subnet" "polaris" {
 
 #Configure the subscription to host Exocompute.
 resource "polaris_azure_exocompute" "polaris" {
-  for_each                  = { for k, v in var.exocompute_details : k => v if contains(var.rsc_azure_features, "EXOCOMPUTE") }
+  for_each = { for k, v in var.exocompute_details : k => v if contains(var.rsc_azure_features, "EXOCOMPUTE") }
   
   cloud_account_id          = polaris_azure_subscription.default.id
   pod_overlay_network_cidr  = each.value["pod_overlay_network_cidr"]
