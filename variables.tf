@@ -39,16 +39,16 @@ variable "delete_snapshots_on_destroy" {
 variable "exocompute_details" {
   description = "Region, VNet, Subnet and pod CIDR for Exocompute."
   type        = map(
-      object(
-        {
-          region                   = string
-          pod_overlay_network_cidr = string
-          subnet_name              = string
-          vnet_name                = string
-          vnet_resource_group_name = string
-        }
-      )
+    object(
+      {
+        region                   = string
+        pod_overlay_network_cidr = string
+        subnet_name              = string
+        vnet_name                = string
+        vnet_resource_group_name = string
+      }
     )
+  )
   default     = {}
 }
 
