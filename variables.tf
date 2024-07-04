@@ -1,7 +1,7 @@
 variable "azure_resource_group_name" {
   type        = string
   description = "Name of the Azure resource group to store snapshots and Exocompute artifacts."
-  default = "Rubrik-Backups-RG"
+  default     = "Rubrik-Backups-RG-Do-Not-Delete"
 }
 
 variable "azure_resource_group_region" {
@@ -12,7 +12,7 @@ variable "azure_resource_group_region" {
 variable "azure_resource_group_tags" {
   type        = map(string)
   description = "Tags to apply to the Azure resource group to store snapshots and Exocompute artifacts."
-  default = {}
+  default     = {}
 }
 
 variable "azure_subscription_id" {
@@ -38,19 +38,23 @@ variable "delete_snapshots_on_destroy" {
 
 variable "exocompute_details" {
   description = "Region, VNet, Subnet and pod CIDR for Exocompute."
-  type = map(object({
-    region                   = string
-    pod_overlay_network_cidr = string
-    subnet_name              = string
-    vnet_name                = string
-    vnet_resource_group_name = string
-  }))
-  default = {}
+  type        = map(
+      object(
+        {
+          region                   = string
+          pod_overlay_network_cidr = string
+          subnet_name              = string
+          vnet_name                = string
+          vnet_resource_group_name = string
+        }
+      )
+    )
+  default     = {}
 }
 
 variable "polaris_credentials" {
   type        = string
-  description = "Full path to credentials file for RSC/Polaris."
+  description = "Full path to credentials file for RSC."
 }
 
 variable "rsc_azure_features" {
