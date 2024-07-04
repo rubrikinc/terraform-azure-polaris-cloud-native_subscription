@@ -132,7 +132,7 @@ module "polaris-azure-cloud-native_subscription_1" {
   
   azure_service_principal_object_id   = module.polaris-azure-cloud-native_tenant.azure_service_principal_object_id
   azure_subscription_id               = "01234567-99ab-cdef-0123-456789abcdef"
-  azure_resource_group_name           = "Rubrik-Backups-RG"
+  azure_resource_group_name           = "RubrikBackups-RG-DontDelete-terraform"
   azure_resource_group_region         = "westus"
   azure_resource_group_tags           = {
     "Environment" = "Test"
