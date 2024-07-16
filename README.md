@@ -23,7 +23,7 @@ terraform {
     }
     polaris = {
       source  = "rubrikinc/polaris"
-      version = "0.9.0-beta.1"
+      version = ">=0.9.0-beta.8"
     } 
   }
 }
@@ -63,6 +63,7 @@ module "polaris-azure-cloud-native_subscription" {
     "Environment" = "Test"
     "Owner"       = "Terraform" 
   }
+  
   exocompute_details                  = {
     exocompute_config_1 = {
       region                    = "westus"
@@ -71,6 +72,7 @@ module "polaris-azure-cloud-native_subscription" {
       vnet_resource_group_name  = "vnet-rg"
     }
   }
+  
   polaris_credentials                 = "../.creds/customer-service-account.json"
   regions_to_protect                  = ["westus"]
   rsc_azure_features                  = [
@@ -86,8 +88,8 @@ module "polaris-azure-cloud-native_subscription" {
 ```
 
 ```hcl
-# Add a multiple subscriptions in the same tenant with multiple regions for Exocompute.
-# Using shared Exocompute 
+# Add multiple subscriptions in the same tenant with multiple regions for Exocompute.
+# (Using Centralized Exocompute: https://docs.rubrik.com/en-us/saas/saas/azr_centralized_exocompute.html)
 
 terraform {
   required_providers {
@@ -96,7 +98,7 @@ terraform {
     }
     polaris = {
       source  = "rubrikinc/polaris"
-      version = "0.9.0-beta.1"
+      version = ">=0.9.0-beta.8"
     } 
   }
 }
