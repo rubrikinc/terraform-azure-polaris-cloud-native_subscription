@@ -1,16 +1,12 @@
 terraform {
   required_providers {
     azurerm = {
-      source = "hashicorp/azurerm"
+      source  = "hashicorp/azurerm"
+      version = ">=3.10.0"
     }
     polaris = {
-      source = "rubrikinc/polaris"
-      version = ">=0.9.0-beta.8"
+      source  = "rubrikinc/polaris"
+      version = ">=1.0.0"
     }
   }
-}
-
-provider "azurerm" {
-  features {}
-  subscription_id = var.azure_subscription_id
 }

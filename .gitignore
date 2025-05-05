@@ -1,7 +1,5 @@
-.terraform*
-*.tfstate*
-*.tfvars
-.*.hcl
-*.out
-.vscode
-!.terraform-docs.yml
+.terraform.lock.hcl
+**/.terraform/*
+**/*.tfstate
+**/*.tfstate.*
+**/*.tfvars
