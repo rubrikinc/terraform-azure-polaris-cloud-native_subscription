@@ -16,8 +16,8 @@ terraform {
 }
 
 variable "azure_service_principal_object_id" {
-  type = string
-  description = ""
+  type        = string
+  description = "The Azure object id of the service principal used by RSC."
 }
 
 variable "azure_subscription_id" {
@@ -36,8 +36,8 @@ variable "polaris_credentials" {
 }
 
 variable "rsc_service_principal_tenant_domain" {
-  type = string
-  description = ""
+  type        = string
+  description = "The Azure domain name of the service principal used by RSC."
 }
 
 provider "azurerm" {

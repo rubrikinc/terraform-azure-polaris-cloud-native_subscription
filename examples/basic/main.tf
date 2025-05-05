@@ -68,15 +68,6 @@ module "polaris_azure_cloud_native_tenant" {
   source = "rubrikinc/polaris-cloud-native_tenant/azure"
 }
 
-# Give RSC time to process the service principal before adding the subscription.
-resource "time_sleep" "wait_for_tenant" {
-  create_duration = "30s"
-
-  depends_on = [
-    module.polaris_azure_cloud_native_tenant,
-  ]
-}
-
 module "polaris_azure_cloud_native_subscription" {
   source = "../.."
 
@@ -102,9 +93,5 @@ module "polaris_azure_cloud_native_subscription" {
     "CLOUD_NATIVE_ARCHIVAL_ENCRYPTION",
     "CLOUD_NATIVE_PROTECTION",
     "EXOCOMPUTE",
-  ]
-
-  depends_on = [
-    time_sleep.wait_for_tenant,
   ]
 }
