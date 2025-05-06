@@ -45,6 +45,16 @@ module "polaris_azure_cloud_native_subscription" {
 - [Centralized Exocompute App](examples/centralized_exocompute)
 - [Centralized Exocompute Host](examples/centralized_exocompute_host)
 
+## Changelog
+
+### v2.1.1
+  * Remove unnecessary `time_sleep` resources from examples.
+
+### v2.1.0
+  * Mark `azure_tenant_id` and `polaris_credentials` input variables as deprecated. They are no longer used by the
+    module and have no replacements.
+  * Move example configuration code from the README.md file to the examples directory.
+
 ## Troubleshooting:
 
 ### Error: Missing Tenant
