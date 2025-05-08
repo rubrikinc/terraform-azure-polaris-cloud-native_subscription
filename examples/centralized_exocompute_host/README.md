@@ -27,14 +27,13 @@ resources.
 | Name | Version |
 |------|---------|
 | <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | >=3.10.0 |
-| <a name="provider_time"></a> [time](#provider\_time) | >=0.13.0 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_polaris_azure_cloud_native_subscription"></a> [polaris\_azure\_cloud\_native\_subscription](#module\_polaris\_azure\_cloud\_native\_subscription) | ../.. | n/a |
-| <a name="module_polaris_azure_cloud_native_tenant"></a> [polaris\_azure\_cloud\_native\_tenant](#module\_polaris\_azure\_cloud\_native\_tenant) | ../../../terraform-azure-polaris-cloud-native_tenant | n/a |
+| <a name="module_polaris_azure_cloud_native_tenant"></a> [polaris\_azure\_cloud\_native\_tenant](#module\_polaris\_azure\_cloud\_native\_tenant) | rubrikinc/polaris-cloud-native_tenant/azure | n/a |
 
 ## Resources
 
@@ -44,7 +43,6 @@ resources.
 | [azurerm_resource_group.westus](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) | resource |
 | [azurerm_virtual_network.eastus](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network) | resource |
 | [azurerm_virtual_network.westus](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network) | resource |
-| [time_sleep.wait_for_tenant](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
 
 ## Inputs
 

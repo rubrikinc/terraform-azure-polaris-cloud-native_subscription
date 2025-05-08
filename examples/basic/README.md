@@ -21,24 +21,12 @@ resources.
 | <a name="requirement_polaris"></a> [polaris](#requirement\_polaris) | >=1.0.0 |
 | <a name="requirement_time"></a> [time](#requirement\_time) | >=0.13.0 |
 
-## Providers
-
-| Name | Version |
-|------|---------|
-| <a name="provider_time"></a> [time](#provider\_time) | >=0.13.0 |
-
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_polaris_azure_cloud_native_subscription"></a> [polaris\_azure\_cloud\_native\_subscription](#module\_polaris\_azure\_cloud\_native\_subscription) | ../.. | n/a |
 | <a name="module_polaris_azure_cloud_native_tenant"></a> [polaris\_azure\_cloud\_native\_tenant](#module\_polaris\_azure\_cloud\_native\_tenant) | rubrikinc/polaris-cloud-native_tenant/azure | n/a |
-
-## Resources
-
-| Name | Type |
-|------|------|
-| [time_sleep.wait_for_tenant](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
 
 ## Inputs
 

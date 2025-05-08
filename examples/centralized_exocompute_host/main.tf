@@ -87,19 +87,7 @@ resource "azurerm_virtual_network" "westus" {
 }
 
 module "polaris_azure_cloud_native_tenant" {
-  #source = "rubrikinc/polaris-cloud-native_tenant/azure"
-
-  source                         = "../../../terraform-azure-polaris-cloud-native_tenant"
-  azure_application_display_name = "ja-terraform-test1"
-}
-
-# Give RSC time to process the service principal before adding the subscription.
-resource "time_sleep" "wait_for_tenant" {
-  create_duration = "30s"
-
-  depends_on = [
-    module.polaris_azure_cloud_native_tenant,
-  ]
+  source = "rubrikinc/polaris-cloud-native_tenant/azure"
 }
 
 module "polaris_azure_cloud_native_subscription" {
@@ -140,10 +128,6 @@ module "polaris_azure_cloud_native_subscription" {
       pod_overlay_network_cidr = "10.1.0.0/16"
     }
   }
-
-  depends_on = [
-    time_sleep.wait_for_tenant,
-  ]
 }
 
 # The output values can be used with the centralized_exocompute example.

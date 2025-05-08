@@ -44,9 +44,9 @@ resources.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_azure_service_principal_object_id"></a> [azure\_service\_principal\_object\_id](#input\_azure\_service\_principal\_object\_id) | n/a | `string` | n/a | yes |
+| <a name="input_azure_service_principal_object_id"></a> [azure\_service\_principal\_object\_id](#input\_azure\_service\_principal\_object\_id) | The Azure object id of the service principal used by RSC. | `string` | n/a | yes |
 | <a name="input_azure_subscription_id"></a> [azure\_subscription\_id](#input\_azure\_subscription\_id) | Azure subscription ID. | `string` | n/a | yes |
 | <a name="input_host_cloud_account_id"></a> [host\_cloud\_account\_id](#input\_host\_cloud\_account\_id) | RSC cloud account ID of the Exocompute host subscription. | `string` | n/a | yes |
 | <a name="input_polaris_credentials"></a> [polaris\_credentials](#input\_polaris\_credentials) | RSC service account credentials or the path to a file containing the service account credentials. | `string` | n/a | yes |
-| <a name="input_rsc_service_principal_tenant_domain"></a> [rsc\_service\_principal\_tenant\_domain](#input\_rsc\_service\_principal\_tenant\_domain) | n/a | `string` | n/a | yes |
+| <a name="input_rsc_service_principal_tenant_domain"></a> [rsc\_service\_principal\_tenant\_domain](#input\_rsc\_service\_principal\_tenant\_domain) | The Azure domain name of the service principal used by RSC. | `string` | n/a | yes |
 <!-- END_TF_DOCS -->
