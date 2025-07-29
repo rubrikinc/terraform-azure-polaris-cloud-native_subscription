@@ -55,7 +55,7 @@ module "polaris_azure_cloud_native_subscription" {
     module and have no replacements.
   * Move example configuration code from the README.md file to the examples directory.
 
-## Troubleshooting:
+## Troubleshooting
 
 ### Error: Missing Tenant
 When you remove the last subscription from an RSC tenant, the tenant will be automatically removed from RSC. To add
