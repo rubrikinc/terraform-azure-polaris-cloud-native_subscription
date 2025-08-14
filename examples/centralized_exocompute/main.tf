@@ -6,7 +6,7 @@ terraform {
     }
     polaris = {
       source  = "rubrikinc/polaris"
-      version = ">=1.0.0"
+      version = ">=1.1.6"
     }
     time = {
       source  = "hashicorp/time"
@@ -68,11 +68,17 @@ module "polaris_azure_cloud_native_subscription" {
     "westus",
   ]
 
-  rsc_azure_features = [
-    "CLOUD_NATIVE_PROTECTION",
-    "AZURE_SQL_DB_PROTECTION",
-    "AZURE_SQL_MI_PROTECTION",
-  ]
+  rsc_features = {
+    AZURE_SQL_MI_PROTECTION = {
+      permission_groups = ["BASIC", "RECOVERY", "BACKUP_V2"]
+    }
+    AZURE_SQL_DB_PROTECTION = {
+      permission_groups = ["BASIC", "RECOVERY", "BACKUP_V2"]
+    }
+    CLOUD_NATIVE_PROTECTION = {
+      permission_groups = ["BASIC", "EXPORT_AND_RESTORE", "FILE_LEVEL_RECOVERY"]
+    }
+  }
 }
 
 resource "polaris_azure_exocompute" "app" {

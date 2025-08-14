@@ -61,12 +61,25 @@ variable "regions_to_protect" {
 
 variable "rsc_azure_features" {
   type        = list(string)
-  description = "List of RSC Azure features to enable."
+  description = "List of RSC features to enable. To specify permission groups for the features use rsc_features variable instead."
+  default     = null
+}
+
+variable "rsc_features" {
+  type = map(object({
+    permission_groups = set(string)
+  }))
+  description = "RSC features to enable with permission groups."
+  default     = null
 }
 
 variable "rsc_service_principal_tenant_domain" {
   type        = string
   description = "Tenant domain of the Service Principal created in RSC."
+}
+
+locals {
+  features = var.rsc_features != null ? var.rsc_features : { for f in var.rsc_azure_features : f => {} }
 }
 
 check "deprecations" {
@@ -77,5 +90,12 @@ check "deprecations" {
   assert {
     condition     = var.polaris_credentials == null
     error_message = "The polaris_credentials variable has been deprecated. It has no replacement and will be removed in a future release."
+  }
+}
+
+check "features" {
+  assert {
+    condition     = (var.rsc_features != null && var.rsc_azure_features == null) || (var.rsc_features == null && var.rsc_azure_features != null)
+    error_message = "Exactly one of rsc_features and rsc_azure_features should be set. Prefer to use rsc_features. If both are set, rsc_features takes precedence."
   }
 }

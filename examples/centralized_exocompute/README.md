@@ -19,14 +19,14 @@ resources.
 | Name | Version |
 |------|---------|
 | <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | >=3.10.0 |
-| <a name="requirement_polaris"></a> [polaris](#requirement\_polaris) | >=1.0.0 |
+| <a name="requirement_polaris"></a> [polaris](#requirement\_polaris) | >=1.1.6 |
 | <a name="requirement_time"></a> [time](#requirement\_time) | >=0.13.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_polaris"></a> [polaris](#provider\_polaris) | >=1.0.0 |
+| <a name="provider_polaris"></a> [polaris](#provider\_polaris) | >=1.1.6 |
 
 ## Modules
 
