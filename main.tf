@@ -9,9 +9,10 @@ data "azurerm_subscription" "current" {}
 
 # Azure permissions required for Cloud Native Protection.
 data "polaris_azure_permissions" "default" {
-  for_each = toset(var.rsc_azure_features)
+  for_each = local.features
 
-  feature = each.key
+  feature           = each.key
+  permission_groups = try(each.value.permission_groups, null)
 }
 
 # Add Azure Resource Group to for snapshots and Exocompute artifacts.
@@ -24,7 +25,7 @@ resource "azurerm_resource_group" "default" {
 # Create a role scoped to the subscription in Azure for each feature with the required
 # permissions.
 resource "azurerm_role_definition" "subscription" {
-  for_each = toset(var.rsc_azure_features)
+  for_each = local.features
 
   name        = "Rubrik Security Cloud SubRole ${each.key} - terraform - ${data.azurerm_subscription.current.subscription_id}"
   description = "Rubrik Security Cloud Subscription role for ${each.key} - Terraform Generated"
@@ -41,7 +42,7 @@ resource "azurerm_role_definition" "subscription" {
 # Create a role scoped to the resource group in the subscription in Azure for each feature with the required
 # permissions.
 resource "azurerm_role_definition" "resource_group" {
-  for_each = toset(var.rsc_azure_features)
+  for_each = local.features
 
   name        = "Rubrik Security Cloud RGRole ${each.key} - terraform - ${data.azurerm_subscription.current.subscription_id}"
   description = "Rubrik Security Cloud Resource Group role for ${each.key} - Terraform Generated"
@@ -50,10 +51,10 @@ resource "azurerm_role_definition" "resource_group" {
   dynamic "permissions" {
     for_each = length(
       concat(
-        data.polaris_azure_permissions.default[each.value].resource_group_actions,
-        data.polaris_azure_permissions.default[each.value].resource_group_data_actions,
-        data.polaris_azure_permissions.default[each.value].resource_group_not_actions,
-        data.polaris_azure_permissions.default[each.value].resource_group_not_data_actions
+        data.polaris_azure_permissions.default[each.key].resource_group_actions,
+        data.polaris_azure_permissions.default[each.key].resource_group_data_actions,
+        data.polaris_azure_permissions.default[each.key].resource_group_not_actions,
+        data.polaris_azure_permissions.default[each.key].resource_group_not_data_actions
       )
     ) > 0 ? [1] : []
     content {
@@ -68,7 +69,7 @@ resource "azurerm_role_definition" "resource_group" {
 # Assign the Subscription level role to the service principal used by RSC. Note that the
 # principal_id is the object id of the service principal.
 resource "azurerm_role_assignment" "subscription" {
-  for_each = toset(var.rsc_azure_features)
+  for_each = local.features
 
   principal_id       = var.azure_service_principal_object_id
   role_definition_id = azurerm_role_definition.subscription[each.key].role_definition_resource_id
@@ -78,7 +79,7 @@ resource "azurerm_role_assignment" "subscription" {
 # Assign the Resource Group level role to the service principal used by RSC. Note that the
 # principal_id is the object id of the service principal.
 resource "azurerm_role_assignment" "resource_group" {
-  for_each = toset(var.rsc_azure_features)
+  for_each = local.features
 
   principal_id       = var.azure_service_principal_object_id
   role_definition_id = azurerm_role_definition.resource_group[each.key].role_definition_resource_id
@@ -86,7 +87,7 @@ resource "azurerm_role_assignment" "resource_group" {
 }
 
 resource "azurerm_user_assigned_identity" "default" {
-  count = contains(var.rsc_azure_features, "CLOUD_NATIVE_ARCHIVAL_ENCRYPTION") ? 1 : 0
+  count = contains(keys(local.features), "CLOUD_NATIVE_ARCHIVAL_ENCRYPTION") ? 1 : 0
 
   location            = azurerm_resource_group.default.location
   name                = "RubrikManagedIdentity-terraform-${data.azurerm_subscription.current.subscription_id}"
@@ -96,14 +97,15 @@ resource "azurerm_user_assigned_identity" "default" {
 # Add the Azure subscription to RSC enabling only the feature found in the rsc_features variable.
 resource "polaris_azure_subscription" "default" {
   delete_snapshots_on_destroy = var.delete_snapshots_on_destroy
-  subscription_id             = element(split("/", data.azurerm_subscription.current.id), 2)
+  subscription_id             = split("/", data.azurerm_subscription.current.id)[2]
   subscription_name           = data.azurerm_subscription.current.display_name
   tenant_domain               = var.rsc_service_principal_tenant_domain
 
   dynamic "cloud_native_archival" {
-    for_each = contains(var.rsc_azure_features, "CLOUD_NATIVE_ARCHIVAL") ? [1] : []
+    for_each = contains(keys(local.features), "CLOUD_NATIVE_ARCHIVAL") ? [1] : []
 
     content {
+      permission_groups     = try(local.features["CLOUD_NATIVE_ARCHIVAL"].permission_groups, null)
       permissions           = data.polaris_azure_permissions.default["CLOUD_NATIVE_ARCHIVAL"].id
       regions               = var.regions_to_protect
       resource_group_name   = var.azure_resource_group_name
@@ -113,9 +115,10 @@ resource "polaris_azure_subscription" "default" {
   }
 
   dynamic "cloud_native_archival_encryption" {
-    for_each = contains(var.rsc_azure_features, "CLOUD_NATIVE_ARCHIVAL_ENCRYPTION") ? [1] : []
+    for_each = contains(keys(local.features), "CLOUD_NATIVE_ARCHIVAL_ENCRYPTION") ? [1] : []
 
     content {
+      permission_groups                                  = try(local.features["CLOUD_NATIVE_ARCHIVAL_ENCRYPTION"].permission_groups, null)
       permissions                                        = data.polaris_azure_permissions.default["CLOUD_NATIVE_ARCHIVAL_ENCRYPTION"].id
       regions                                            = var.regions_to_protect
       resource_group_name                                = var.azure_resource_group_name
@@ -128,10 +131,21 @@ resource "polaris_azure_subscription" "default" {
     }
   }
 
-  dynamic "cloud_native_protection" {
-    for_each = contains(var.rsc_azure_features, "CLOUD_NATIVE_PROTECTION") ? [1] : []
+  dynamic "cloud_native_blob_protection" {
+    for_each = contains(keys(local.features), "CLOUD_NATIVE_BLOB_PROTECTION") ? [1] : []
 
     content {
+      permission_groups = try(local.features["CLOUD_NATIVE_BLOB_PROTECTION"].permission_groups, null)
+      permissions       = data.polaris_azure_permissions.default["CLOUD_NATIVE_BLOB_PROTECTION"].id
+      regions           = var.regions_to_protect
+    }
+  }
+
+  dynamic "cloud_native_protection" {
+    for_each = contains(keys(local.features), "CLOUD_NATIVE_PROTECTION") ? [1] : []
+
+    content {
+      permission_groups     = try(local.features["CLOUD_NATIVE_PROTECTION"].permission_groups, null)
       permissions           = data.polaris_azure_permissions.default["CLOUD_NATIVE_PROTECTION"].id
       regions               = var.regions_to_protect
       resource_group_name   = var.azure_resource_group_name
@@ -141,9 +155,10 @@ resource "polaris_azure_subscription" "default" {
   }
 
   dynamic "exocompute" {
-    for_each = contains(var.rsc_azure_features, "EXOCOMPUTE") ? [1] : []
+    for_each = contains(keys(local.features), "EXOCOMPUTE") ? [1] : []
 
     content {
+      permission_groups     = try(local.features["EXOCOMPUTE"].permission_groups, null)
       permissions           = data.polaris_azure_permissions.default["EXOCOMPUTE"].id
       regions               = var.regions_to_protect
       resource_group_name   = var.azure_resource_group_name
@@ -153,7 +168,7 @@ resource "polaris_azure_subscription" "default" {
   }
 
   dynamic "sql_db_protection" {
-    for_each = contains(var.rsc_azure_features, "AZURE_SQL_DB_PROTECTION") ? [1] : []
+    for_each = contains(keys(local.features), "AZURE_SQL_DB_PROTECTION") && !can(local.features["AZURE_SQL_DB_PROTECTION"].permission_groups) ? [1] : []
 
     content {
       permissions = data.polaris_azure_permissions.default["AZURE_SQL_DB_PROTECTION"].id
@@ -161,12 +176,27 @@ resource "polaris_azure_subscription" "default" {
     }
   }
 
-  dynamic "sql_mi_protection" {
-    for_each = contains(var.rsc_azure_features, "AZURE_SQL_MI_PROTECTION") ? [1] : []
+  dynamic "sql_db_protection" {
+    for_each = contains(keys(local.features), "AZURE_SQL_DB_PROTECTION") && can(local.features["AZURE_SQL_DB_PROTECTION"].permission_groups) ? [1] : []
 
     content {
-      permissions = data.polaris_azure_permissions.default["AZURE_SQL_MI_PROTECTION"].id
-      regions     = var.regions_to_protect
+      permission_groups     = try(local.features["AZURE_SQL_DB_PROTECTION"].permission_groups, null)
+      permissions           = data.polaris_azure_permissions.default["AZURE_SQL_DB_PROTECTION"].id
+      regions               = var.regions_to_protect
+      resource_group_name   = var.azure_resource_group_name
+      resource_group_region = var.azure_resource_group_region
+      resource_group_tags   = var.azure_resource_group_tags
+    }
+  }
+
+
+  dynamic "sql_mi_protection" {
+    for_each = contains(keys(local.features), "AZURE_SQL_MI_PROTECTION") ? [1] : []
+
+    content {
+      permission_groups = try(local.features["AZURE_SQL_MI_PROTECTION"].permission_groups, null)
+      permissions       = data.polaris_azure_permissions.default["AZURE_SQL_MI_PROTECTION"].id
+      regions           = var.regions_to_protect
     }
   }
 
@@ -181,7 +211,7 @@ resource "polaris_azure_subscription" "default" {
 }
 
 data "azurerm_subnet" "polaris" {
-  for_each = { for k, v in var.exocompute_details : k => v if contains(var.rsc_azure_features, "EXOCOMPUTE") }
+  for_each = { for k, v in var.exocompute_details : k => v if contains(keys(local.features), "EXOCOMPUTE") }
 
   name                 = each.value["subnet_name"]
   virtual_network_name = each.value["vnet_name"]
@@ -190,7 +220,7 @@ data "azurerm_subnet" "polaris" {
 
 # Configure the subscription to host Exocompute.
 resource "polaris_azure_exocompute" "polaris" {
-  for_each = { for k, v in var.exocompute_details : k => v if contains(var.rsc_azure_features, "EXOCOMPUTE") }
+  for_each = { for k, v in var.exocompute_details : k => v if contains(keys(local.features), "EXOCOMPUTE") }
 
   cloud_account_id         = polaris_azure_subscription.default.id
   pod_overlay_network_cidr = each.value["pod_overlay_network_cidr"]

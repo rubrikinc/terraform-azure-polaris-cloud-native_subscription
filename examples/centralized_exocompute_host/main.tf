@@ -10,7 +10,7 @@ terraform {
     }
     polaris = {
       source  = "rubrikinc/polaris"
-      version = ">=1.0.0"
+      version = ">=1.1.6"
     }
     time = {
       source  = "hashicorp/time"
@@ -108,9 +108,11 @@ module "polaris_azure_cloud_native_subscription" {
     "westus",
   ]
 
-  rsc_azure_features = [
-    "EXOCOMPUTE",
-  ]
+  rsc_features = {
+    EXOCOMPUTE = {
+      permission_groups = ["BASIC"]
+    }
+  }
 
   exocompute_details = {
     exocompute_config_1 = {

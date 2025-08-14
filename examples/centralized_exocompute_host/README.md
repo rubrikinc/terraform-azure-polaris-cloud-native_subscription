@@ -19,7 +19,7 @@ resources.
 |------|---------|
 | <a name="requirement_azuread"></a> [azuread](#requirement\_azuread) | >=2.15.0 |
 | <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | >=3.10.0 |
-| <a name="requirement_polaris"></a> [polaris](#requirement\_polaris) | >=1.0.0 |
+| <a name="requirement_polaris"></a> [polaris](#requirement\_polaris) | >=1.1.6 |
 | <a name="requirement_time"></a> [time](#requirement\_time) | >=0.13.0 |
 
 ## Providers

@@ -20,14 +20,29 @@ module "polaris_azure_cloud_native_subscription" {
     "westus",
   ]
 
-  rsc_azure_features = [
-    "AZURE_SQL_DB_PROTECTION",
-    "AZURE_SQL_MI_PROTECTION",
-    "CLOUD_NATIVE_ARCHIVAL",
-    "CLOUD_NATIVE_ARCHIVAL_ENCRYPTION",
-    "CLOUD_NATIVE_PROTECTION",
-    "EXOCOMPUTE",
-  ]
+  rsc_features = {
+    AZURE_SQL_MI_PROTECTION = {
+      permission_groups = ["BASIC", "RECOVERY", "BACKUP_V2"]
+    }
+    AZURE_SQL_DB_PROTECTION = {
+      permission_groups = ["BASIC", "RECOVERY", "BACKUP_V2"]
+    }
+    CLOUD_NATIVE_ARCHIVAL = {
+      permission_groups = ["BASIC", "ENCRYPTION"]
+    }
+    CLOUD_NATIVE_ARCHIVAL_ENCRYPTION = {
+      permission_groups = ["BASIC", "ENCRYPTION"]
+    }
+    CLOUD_NATIVE_BLOB_PROTECTION = {
+      permission_groups = ["BASIC", "RECOVERY"]
+    }
+    CLOUD_NATIVE_PROTECTION = {
+      permission_groups = ["BASIC", "EXPORT_AND_RESTORE", "FILE_LEVEL_RECOVERY"]
+    }
+    EXOCOMPUTE = {
+      permission_groups = ["BASIC"]
+    }
+  }
 
   exocompute_details  = {
     exocompute_config = {
@@ -47,15 +62,22 @@ module "polaris_azure_cloud_native_subscription" {
 
 ## Changelog
 
+### v2.2.0
+* Update the version constraint of the `rubrikinc/polaris` provider to `>=1.1.6`.
+* Add `rsc_features` input variable, used to specify RSC features to enable with permission groups. Exactly one of
+ `rsc_features` and `rsc_azure_features` should be specified. If both are specified, `rsc_feature` take precedence.
+* Add support for the `CLOUD_NATIVE_BLOB_PROTECTION` RSC feature. Note, this feature requires permission groups to be
+  specified.
+
 ### v2.1.1
-  * Remove unnecessary `time_sleep` resources from examples.
+* Remove unnecessary `time_sleep` resources from examples.
 
 ### v2.1.0
-  * Mark `azure_tenant_id` and `polaris_credentials` input variables as deprecated. They are no longer used by the
-    module and have no replacements.
-  * Move example configuration code from the README.md file to the examples directory.
+* Mark `azure_subscription_id` and `polaris_credentials` input variables as deprecated. They are no longer used by the
+  module and have no replacements.
+* Move example configuration code from the README.md file to the examples directory.
 
-## Troubleshooting:
+## Troubleshooting
 
 ### Error: Missing Tenant
 When you remove the last subscription from an RSC tenant, the tenant will be automatically removed from RSC. To add
@@ -85,14 +107,14 @@ welcome. Thank you in advance for all of your issues, pull requests, and comment
 | Name | Version |
 |------|---------|
 | <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | >=3.10.0 |
-| <a name="requirement_polaris"></a> [polaris](#requirement\_polaris) | >=1.0.0 |
+| <a name="requirement_polaris"></a> [polaris](#requirement\_polaris) | >=1.1.6 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | >=3.10.0 |
-| <a name="provider_polaris"></a> [polaris](#provider\_polaris) | >=1.0.0 |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 4.39.0 |
+| <a name="provider_polaris"></a> [polaris](#provider\_polaris) | 1.1.6 |
 
 ## Resources
 
@@ -123,7 +145,8 @@ welcome. Thank you in advance for all of your issues, pull requests, and comment
 | <a name="input_exocompute_details"></a> [exocompute\_details](#input\_exocompute\_details) | Region, VNet, Subnet and pod CIDR for Exocompute. | <pre>map(<br/>    object(<br/>      {<br/>        region                   = string<br/>        pod_overlay_network_cidr = string<br/>        subnet_name              = string<br/>        vnet_name                = string<br/>        vnet_resource_group_name = string<br/>      }<br/>    )<br/>  )</pre> | `{}` | no |
 | <a name="input_polaris_credentials"></a> [polaris\_credentials](#input\_polaris\_credentials) | Deprecated: no replacement. | `string` | `null` | no |
 | <a name="input_regions_to_protect"></a> [regions\_to\_protect](#input\_regions\_to\_protect) | List of Azure regions to protect. | `list(string)` | n/a | yes |
-| <a name="input_rsc_azure_features"></a> [rsc\_azure\_features](#input\_rsc\_azure\_features) | List of RSC Azure features to enable. | `list(string)` | n/a | yes |
+| <a name="input_rsc_azure_features"></a> [rsc\_azure\_features](#input\_rsc\_azure\_features) | List of RSC features to enable. To specify permission groups for the features use rsc\_features variable instead. | `list(string)` | `null` | no |
+| <a name="input_rsc_features"></a> [rsc\_features](#input\_rsc\_features) | RSC features to enable with permission groups. | <pre>map(object({<br/>    permission_groups = set(string)<br/>  }))</pre> | `null` | no |
 | <a name="input_rsc_service_principal_tenant_domain"></a> [rsc\_service\_principal\_tenant\_domain](#input\_rsc\_service\_principal\_tenant\_domain) | Tenant domain of the Service Principal created in RSC. | `string` | n/a | yes |
 
 ## Outputs
