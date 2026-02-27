@@ -50,6 +50,11 @@ module "polaris_azure_cloud_native_subscription" {
       subnet_name               = "subnet1"
       vnet_name                 = "vnet1"
       vnet_resource_group_name  = "vnet-rg"
+
+      # Optional advanced Exocompute configuration.
+      optional_config = {
+        cluster_access = "AKS_CLUSTER_ACCESS_TYPE_PRIVATE"
+      }
     }
   }
 }
@@ -61,6 +66,11 @@ module "polaris_azure_cloud_native_subscription" {
 - [Centralized Exocompute Host](examples/centralized_exocompute_host)
 
 ## Changelog
+
+### v2.3.0
+* Add `optional_config` block to the `exocompute_details` variable, enabling configuration of advanced Exocompute
+  settings such as IP allowlisting, cluster access, cluster tier, disk encryption at host, node count limits, private
+  DNS zones, resource group prefix, and user-defined routing.
 
 ### v2.2.0
 * Update the version constraint of the `rubrikinc/polaris` provider to `>=1.1.6`.
@@ -107,14 +117,14 @@ welcome. Thank you in advance for all of your issues, pull requests, and comment
 | Name | Version |
 |------|---------|
 | <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | >=3.10.0 |
-| <a name="requirement_polaris"></a> [polaris](#requirement\_polaris) | >=1.1.6 |
+| <a name="requirement_polaris"></a> [polaris](#requirement\_polaris) | >=1.5.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 4.39.0 |
-| <a name="provider_polaris"></a> [polaris](#provider\_polaris) | 1.1.6 |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | >=3.10.0 |
+| <a name="provider_polaris"></a> [polaris](#provider\_polaris) | >=1.5.0 |
 
 ## Resources
 
@@ -142,7 +152,7 @@ welcome. Thank you in advance for all of your issues, pull requests, and comment
 | <a name="input_azure_service_principal_object_id"></a> [azure\_service\_principal\_object\_id](#input\_azure\_service\_principal\_object\_id) | Azure service principal object id. | `string` | n/a | yes |
 | <a name="input_azure_subscription_id"></a> [azure\_subscription\_id](#input\_azure\_subscription\_id) | Deprecated: no replacement. | `string` | `null` | no |
 | <a name="input_delete_snapshots_on_destroy"></a> [delete\_snapshots\_on\_destroy](#input\_delete\_snapshots\_on\_destroy) | Should snapshots be deleted when the resource is destroyed. | `bool` | `false` | no |
-| <a name="input_exocompute_details"></a> [exocompute\_details](#input\_exocompute\_details) | Region, VNet, Subnet and pod CIDR for Exocompute. | <pre>map(<br/>    object(<br/>      {<br/>        region                   = string<br/>        pod_overlay_network_cidr = string<br/>        subnet_name              = string<br/>        vnet_name                = string<br/>        vnet_resource_group_name = string<br/>      }<br/>    )<br/>  )</pre> | `{}` | no |
+| <a name="input_exocompute_details"></a> [exocompute\_details](#input\_exocompute\_details) | Region, VNet, Subnet and pod CIDR for Exocompute. | <pre>map(<br/>    object(<br/>      {<br/>        region                   = string<br/>        pod_overlay_network_cidr = string<br/>        subnet_name              = string<br/>        vnet_name                = string<br/>        vnet_resource_group_name = string<br/>        optional_config = optional(object({<br/>          allowlist_additional_ips            = optional(set(string))<br/>          allowlist_rubrik_ips                = optional(bool)<br/>          cluster_access                      = optional(string)<br/>          cluster_tier                        = optional(string)<br/>          disk_encryption_at_host             = optional(bool)<br/>          max_node_count                      = optional(string)<br/>          private_exocompute_dns_zone_id      = optional(string)<br/>          resource_group_prefix               = optional(string)<br/>          snapshot_private_access_dns_zone_id = optional(string)<br/>          user_defined_routing                = optional(bool)<br/>        }))<br/>      }<br/>    )<br/>  )</pre> | `{}` | no |
 | <a name="input_polaris_credentials"></a> [polaris\_credentials](#input\_polaris\_credentials) | Deprecated: no replacement. | `string` | `null` | no |
 | <a name="input_regions_to_protect"></a> [regions\_to\_protect](#input\_regions\_to\_protect) | List of Azure regions to protect. | `list(string)` | n/a | yes |
 | <a name="input_rsc_azure_features"></a> [rsc\_azure\_features](#input\_rsc\_azure\_features) | List of RSC features to enable. To specify permission groups for the features use rsc\_features variable instead. | `list(string)` | `null` | no |

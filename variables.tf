@@ -42,6 +42,18 @@ variable "exocompute_details" {
         subnet_name              = string
         vnet_name                = string
         vnet_resource_group_name = string
+        optional_config = optional(object({
+          allowlist_additional_ips            = optional(set(string))
+          allowlist_rubrik_ips                = optional(bool)
+          cluster_access                      = optional(string)
+          cluster_tier                        = optional(string)
+          disk_encryption_at_host             = optional(bool)
+          max_node_count                      = optional(string)
+          private_exocompute_dns_zone_id      = optional(string)
+          resource_group_prefix               = optional(string)
+          snapshot_private_access_dns_zone_id = optional(string)
+          user_defined_routing                = optional(bool)
+        }))
       }
     )
   )
