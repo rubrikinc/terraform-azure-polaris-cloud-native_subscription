@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.3.0
+* Add `optional_config` block to the `exocompute_details` variable, enabling configuration of advanced Exocompute
+  settings such as IP allowlisting, cluster access, cluster tier, disk encryption at host, node count limits, private
+  DNS zones, resource group prefix, and user-defined routing.
+
 ## v2.2.0
 * Update the version constraint of the `rubrikinc/polaris` provider to `>=1.1.6`.
 * Add `rsc_features` input variable, used to specify RSC features to enable with permission groups. Exactly one of

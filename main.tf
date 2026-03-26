@@ -226,4 +226,21 @@ resource "polaris_azure_exocompute" "polaris" {
   pod_overlay_network_cidr = each.value["pod_overlay_network_cidr"]
   region                   = each.value["region"]
   subnet                   = data.azurerm_subnet.polaris[each.key].id
+
+  dynamic "optional_config" {
+    for_each = each.value.optional_config != null ? [each.value.optional_config] : []
+
+    content {
+      allowlist_additional_ips            = optional_config.value.allowlist_additional_ips
+      allowlist_rubrik_ips                = optional_config.value.allowlist_rubrik_ips
+      cluster_access                      = optional_config.value.cluster_access
+      cluster_tier                        = optional_config.value.cluster_tier
+      disk_encryption_at_host             = optional_config.value.disk_encryption_at_host
+      max_node_count                      = optional_config.value.max_node_count
+      private_exocompute_dns_zone_id      = optional_config.value.private_exocompute_dns_zone_id
+      resource_group_prefix               = optional_config.value.resource_group_prefix
+      snapshot_private_access_dns_zone_id = optional_config.value.snapshot_private_access_dns_zone_id
+      user_defined_routing                = optional_config.value.user_defined_routing
+    }
+  }
 }
