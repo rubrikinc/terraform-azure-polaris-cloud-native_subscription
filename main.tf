@@ -15,6 +15,10 @@ data "polaris_azure_permissions" "default" {
   permission_groups = try(each.value.permission_groups, null)
 }
 
+data "polaris_feature_flag" "azure_sql_tde_cmk" {
+  name = "CNP_AZURE_SQL_TDE_CMK_ENABLED"
+}
+
 # Add Azure Resource Group to for snapshots and Exocompute artifacts.
 resource "azurerm_resource_group" "default" {
   name     = var.azure_resource_group_name
@@ -91,6 +95,14 @@ resource "azurerm_user_assigned_identity" "default" {
 
   location            = azurerm_resource_group.default.location
   name                = "RubrikManagedIdentity-terraform-${data.azurerm_subscription.current.subscription_id}"
+  resource_group_name = azurerm_resource_group.default.name
+}
+
+resource "azurerm_user_assigned_identity" "managed_identity" {
+  count = contains(keys(local.features), "AZURE_SQL_DB_PROTECTION") && data.polaris_feature_flag.azure_sql_tde_cmk.enabled ? 1 : 0
+
+  location            = azurerm_resource_group.default.location
+  name                = var.sql_db_protection_managed_identity_name
   resource_group_name = azurerm_resource_group.default.name
 }
 
@@ -180,12 +192,16 @@ resource "polaris_azure_subscription" "default" {
     for_each = contains(keys(local.features), "AZURE_SQL_DB_PROTECTION") && can(local.features["AZURE_SQL_DB_PROTECTION"].permission_groups) ? [1] : []
 
     content {
-      permission_groups     = try(local.features["AZURE_SQL_DB_PROTECTION"].permission_groups, null)
-      permissions           = data.polaris_azure_permissions.default["AZURE_SQL_DB_PROTECTION"].id
-      regions               = var.regions_to_protect
-      resource_group_name   = var.azure_resource_group_name
-      resource_group_region = var.azure_resource_group_region
-      resource_group_tags   = var.azure_resource_group_tags
+      permission_groups                                  = try(local.features["AZURE_SQL_DB_PROTECTION"].permission_groups, null)
+      permissions                                        = data.polaris_azure_permissions.default["AZURE_SQL_DB_PROTECTION"].id
+      regions                                            = var.regions_to_protect
+      resource_group_name                                = var.azure_resource_group_name
+      resource_group_region                              = var.azure_resource_group_region
+      resource_group_tags                                = var.azure_resource_group_tags
+      user_assigned_managed_identity_name                = data.polaris_feature_flag.azure_sql_tde_cmk.enabled ? azurerm_user_assigned_identity.managed_identity[0].name : null
+      user_assigned_managed_identity_principal_id        = data.polaris_feature_flag.azure_sql_tde_cmk.enabled ? azurerm_user_assigned_identity.managed_identity[0].principal_id : null
+      user_assigned_managed_identity_region              = data.polaris_feature_flag.azure_sql_tde_cmk.enabled ? azurerm_user_assigned_identity.managed_identity[0].location : null
+      user_assigned_managed_identity_resource_group_name = data.polaris_feature_flag.azure_sql_tde_cmk.enabled ? azurerm_user_assigned_identity.managed_identity[0].resource_group_name : null
     }
   }
 

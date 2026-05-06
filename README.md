@@ -92,6 +92,14 @@ All fields are optional — when omitted the provider defaults are used.
 
 ## Changelog
 
+### v2.4.0
+* Update the version constraint of the `rubrikinc/polaris` provider to `>=1.7.0`.
+* Add support for SQL TDE customer-managed keys on the `AZURE_SQL_DB_PROTECTION` feature. When the
+  `CNP_AZURE_SQL_TDE_CMK_ENABLED` RSC feature flag is enabled, a user-assigned managed identity is created and wired
+  into the `sql_db_protection` block via the new `user_assigned_managed_identity_*` arguments.
+* Add `sql_db_protection_managed_identity_name` input variable, used to name the user-assigned managed identity
+  associated with SQL DB protection. Required when the `CNP_AZURE_SQL_TDE_CMK_ENABLED` feature flag is enabled.
+
 ### v2.3.0
 * Add `optional_config` block to the `exocompute_details` variable, enabling configuration of advanced Exocompute
   settings such as IP allowlisting, cluster access, cluster tier, disk encryption at host, node count limits, private
@@ -142,14 +150,14 @@ welcome. Thank you in advance for all of your issues, pull requests, and comment
 | Name | Version |
 |------|---------|
 | <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | >=3.10.0 |
-| <a name="requirement_polaris"></a> [polaris](#requirement\_polaris) | >=1.5.0 |
+| <a name="requirement_polaris"></a> [polaris](#requirement\_polaris) | >=1.7.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
 | <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | >=3.10.0 |
-| <a name="provider_polaris"></a> [polaris](#provider\_polaris) | >=1.5.0 |
+| <a name="provider_polaris"></a> [polaris](#provider\_polaris) | >=1.7.0 |
 
 ## Resources
 
@@ -161,11 +169,13 @@ welcome. Thank you in advance for all of your issues, pull requests, and comment
 | [azurerm_role_definition.resource_group](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_definition) | resource |
 | [azurerm_role_definition.subscription](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_definition) | resource |
 | [azurerm_user_assigned_identity.default](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/user_assigned_identity) | resource |
+| [azurerm_user_assigned_identity.managed_identity](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/user_assigned_identity) | resource |
 | [polaris_azure_exocompute.polaris](https://registry.terraform.io/providers/rubrikinc/polaris/latest/docs/resources/azure_exocompute) | resource |
 | [polaris_azure_subscription.default](https://registry.terraform.io/providers/rubrikinc/polaris/latest/docs/resources/azure_subscription) | resource |
 | [azurerm_subnet.polaris](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/subnet) | data source |
 | [azurerm_subscription.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/subscription) | data source |
 | [polaris_azure_permissions.default](https://registry.terraform.io/providers/rubrikinc/polaris/latest/docs/data-sources/azure_permissions) | data source |
+| [polaris_feature_flag.azure_sql_tde_cmk](https://registry.terraform.io/providers/rubrikinc/polaris/latest/docs/data-sources/feature_flag) | data source |
 
 ## Inputs
 
@@ -183,6 +193,7 @@ welcome. Thank you in advance for all of your issues, pull requests, and comment
 | <a name="input_rsc_azure_features"></a> [rsc\_azure\_features](#input\_rsc\_azure\_features) | List of RSC features to enable. To specify permission groups for the features use rsc\_features variable instead. | `list(string)` | `null` | no |
 | <a name="input_rsc_features"></a> [rsc\_features](#input\_rsc\_features) | RSC features to enable with permission groups. | <pre>map(object({<br/>    permission_groups = set(string)<br/>  }))</pre> | `null` | no |
 | <a name="input_rsc_service_principal_tenant_domain"></a> [rsc\_service\_principal\_tenant\_domain](#input\_rsc\_service\_principal\_tenant\_domain) | Tenant domain of the Service Principal created in RSC. | `string` | n/a | yes |
+| <a name="input_sql_db_protection_managed_identity_name"></a> [sql\_db\_protection\_managed\_identity\_name](#input\_sql\_db\_protection\_managed\_identity\_name) | Managed Identity Name used for SQL DB Protection | `string` | `null` | no |
 
 ## Outputs
 

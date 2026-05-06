@@ -117,6 +117,12 @@ variable "rsc_service_principal_tenant_domain" {
   description = "Tenant domain of the Service Principal created in RSC."
 }
 
+variable "sql_db_protection_managed_identity_name" {
+  type        = string
+  description = "Managed Identity Name used for SQL DB Protection"
+  default     = null
+}
+
 locals {
   features = var.rsc_features != null ? var.rsc_features : { for f in var.rsc_azure_features : f => {} }
 }
