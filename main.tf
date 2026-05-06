@@ -98,7 +98,7 @@ resource "azurerm_user_assigned_identity" "default" {
   resource_group_name = azurerm_resource_group.default.name
 }
 
-resource "azurerm_user_assigned_identity" "managed_identity" {
+resource "azurerm_user_assigned_identity" "sql_managed_identity" {
   count = contains(keys(local.features), "AZURE_SQL_DB_PROTECTION") && data.polaris_feature_flag.azure_sql_tde_cmk.enabled ? 1 : 0
 
   location            = azurerm_resource_group.default.location
@@ -198,10 +198,10 @@ resource "polaris_azure_subscription" "default" {
       resource_group_name                                = var.azure_resource_group_name
       resource_group_region                              = var.azure_resource_group_region
       resource_group_tags                                = var.azure_resource_group_tags
-      user_assigned_managed_identity_name                = data.polaris_feature_flag.azure_sql_tde_cmk.enabled ? azurerm_user_assigned_identity.managed_identity[0].name : null
-      user_assigned_managed_identity_principal_id        = data.polaris_feature_flag.azure_sql_tde_cmk.enabled ? azurerm_user_assigned_identity.managed_identity[0].principal_id : null
-      user_assigned_managed_identity_region              = data.polaris_feature_flag.azure_sql_tde_cmk.enabled ? azurerm_user_assigned_identity.managed_identity[0].location : null
-      user_assigned_managed_identity_resource_group_name = data.polaris_feature_flag.azure_sql_tde_cmk.enabled ? azurerm_user_assigned_identity.managed_identity[0].resource_group_name : null
+      user_assigned_managed_identity_name                = data.polaris_feature_flag.azure_sql_tde_cmk.enabled ? azurerm_user_assigned_identity.sql_managed_identity[0].name : null
+      user_assigned_managed_identity_principal_id        = data.polaris_feature_flag.azure_sql_tde_cmk.enabled ? azurerm_user_assigned_identity.sql_managed_identity[0].principal_id : null
+      user_assigned_managed_identity_region              = data.polaris_feature_flag.azure_sql_tde_cmk.enabled ? azurerm_user_assigned_identity.sql_managed_identity[0].location : null
+      user_assigned_managed_identity_resource_group_name = data.polaris_feature_flag.azure_sql_tde_cmk.enabled ? azurerm_user_assigned_identity.sql_managed_identity[0].resource_group_name : null
     }
   }
 
