@@ -16,7 +16,7 @@ data "polaris_azure_permissions" "default" {
 }
 
 data "polaris_feature_flag" "azure_sql_tde_cmk" {
-  name = "CNP_AZURE_SQL_TDE_CMK_ENABLED"
+  name = "CNP_AZURE_SQL_DB_TDE_CMK_SUPPORT"
 }
 
 # Add Azure Resource Group to for snapshots and Exocompute artifacts.
