@@ -119,7 +119,7 @@ variable "rsc_service_principal_tenant_domain" {
 
 variable "sql_db_protection_managed_identity_name" {
   type        = string
-  description = "Managed Identity Name used for SQL DB Protection. Required when AZURE_SQL_DB_PROTECTION is enabled and the CNP_AZURE_SQL_TDE_CMK_ENABLED RSC feature flag is on."
+  description = "Managed Identity Name used for SQL DB Protection. Required when AZURE_SQL_DB_PROTECTION is enabled and the CNP_AZURE_SQL_DB_TDE_CMK_SUPPORT RSC feature flag is on."
   default     = null
 }
 
@@ -152,6 +152,6 @@ check "sql_db_protection_managed_identity" {
       data.polaris_feature_flag.azure_sql_tde_cmk.enabled &&
       var.sql_db_protection_managed_identity_name == null
     )
-    error_message = "sql_db_protection_managed_identity_name must be set when AZURE_SQL_DB_PROTECTION is enabled and the CNP_AZURE_SQL_TDE_CMK_ENABLED RSC feature flag is on."
+    error_message = "sql_db_protection_managed_identity_name must be set when AZURE_SQL_DB_PROTECTION is enabled and the CNP_AZURE_SQL_DB_TDE_CMK_SUPPORT RSC feature flag is on."
   }
 }
