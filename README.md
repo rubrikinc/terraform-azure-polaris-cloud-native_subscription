@@ -95,10 +95,10 @@ All fields are optional — when omitted the provider defaults are used.
 ### v2.4.0
 * Update the version constraint of the `rubrikinc/polaris` provider to `>=1.7.0`.
 * Add support for SQL TDE customer-managed keys on the `AZURE_SQL_DB_PROTECTION` feature. When the
-  `CNP_AZURE_SQL_TDE_CMK_ENABLED` RSC feature flag is enabled, a user-assigned managed identity is created and wired
+  `CNP_AZURE_SQL_DB_TDE_CMK_SUPPORT` RSC feature flag is enabled, a user-assigned managed identity is created and wired
   into the `sql_db_protection` block via the new `user_assigned_managed_identity_*` arguments.
 * Add `sql_db_protection_managed_identity_name` input variable, used to name the user-assigned managed identity
-  associated with SQL DB protection. Required when the `CNP_AZURE_SQL_TDE_CMK_ENABLED` feature flag is enabled.
+  associated with SQL DB protection. Required when the `CNP_AZURE_SQL_DB_TDE_CMK_SUPPORT` feature flag is enabled.
 
 ### v2.3.0
 * Add `optional_config` block to the `exocompute_details` variable, enabling configuration of advanced Exocompute
